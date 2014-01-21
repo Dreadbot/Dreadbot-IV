@@ -1,23 +1,20 @@
 #include "WPILib.h"
 #include <math.h>
 
+const uint AUTON_PERIOD = 60 // Seconds: Length of the autonomous period
+const uint TELEOP_PERIOD = 90 // Seconds: Length of the teleoperated period
+const double LRATE = 0.034 // Seconds: Refresh rate of the constrol loops (has to be under half a second)
 
-#define Robot_1 // Profile
-#define TEST_WATCHDOG // Enables the watchdog in test mode
-
-
-
-//#define TEST_MATCHSIM // Test mode simulates a match
-//#define TEST_AUTON // Test mode simulates autonomous mode
-//#define TEST_TELEOP // Test mode simulates tele-op period
-#define TEST_FREEDRIVE // Test mode allows free tele-op-esque control of the robot without tele-op time limits
-
+#define TEST_WATCHDOG
+//#define TEST_MATCHSIM // Simulate a full match
+//#define TEST_AUTON // Simulate autonomous
+//#define TEST_TELEOP // Simulate tele-op w/time constraints
+#define TEST_FREEDRIVE // Tele-op-esque control of the robot without timed cutoff
 
 
-#ifdef ROBOT_1 // Robot-specific parameters go here.
-	const uint AUTON_PERIOD = 60 // Seconds: Length of the autonomous period
-	const uint TELEOP_PERIOD = 90 // Seconds: Length of the teleoperated period
-	const double LRATE = 0.1 // Seconds: Refresh rate of the constrol loops (has to be under half a second)
+#define PRF_0
+#ifdef PRF_0
+
 	#define chDRV_FL 2; // PWM channel; controls the drive motor of the front-left swerve module.
 	#define chDRV_FR 3;
 	#define chDRV_RL 4;
