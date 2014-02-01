@@ -36,19 +36,6 @@
    41         m_safetyHelper = new MotorSafetyHelper(this);
    42         m_safetyHelper->SetSafetyEnabled(true);
    43 }
-   44 
-   52 RobotDrive::RobotDrive(uint32_t leftMotorChannel, uint32_t rightMotorChannel)
-   53 {
-   54         InitRobotDrive();
-   55         m_rearLeftMotor = new Jaguar(leftMotorChannel);
-   56         m_rearRightMotor = new Jaguar(rightMotorChannel);
-   57         for (int32_t i=0; i < kMaxNumberOfMotors; i++)
-   58         {
-   59                 m_invertedMotors[i] = 1;
-   60         }
-   61         SetLeftRightMotorOutputs(0.0, 0.0);
-   62         m_deleteSpeedControllers = true;
-   63 }
    64 
    75 RobotDrive::RobotDrive(uint32_t frontLeftMotor, uint32_t rearLeftMotor,
    76                 uint32_t frontRightMotor, uint32_t rearRightMotor)
@@ -65,37 +52,6 @@
    87         SetLeftRightMotorOutputs(0.0, 0.0);
    88         m_deleteSpeedControllers = true;
    89 }
-   90 
-   99 RobotDrive::RobotDrive(SpeedController *leftMotor, SpeedController *rightMotor)
-  100 {
-  101         InitRobotDrive();
-  102         if (leftMotor == NULL || rightMotor == NULL)
-  103         {
-  104                 wpi_setWPIError(NullParameter);
-  105                 m_rearLeftMotor = m_rearRightMotor = NULL;
-  106                 return;
-  107         }
-  108         m_rearLeftMotor = leftMotor;
-  109         m_rearRightMotor = rightMotor;
-  110         for (int32_t i=0; i < kMaxNumberOfMotors; i++)
-  111         {
-  112                 m_invertedMotors[i] = 1;
-  113         }
-  114         m_deleteSpeedControllers = false;
-  115 }
-  116 
-  117 RobotDrive::RobotDrive(SpeedController &leftMotor, SpeedController &rightMotor)
-  118 {
-  119         InitRobotDrive();
-  120         m_rearLeftMotor = &leftMotor;
-  121         m_rearRightMotor = &rightMotor;
-  122         for (int32_t i=0; i < kMaxNumberOfMotors; i++)
-  123         {
-  124                 m_invertedMotors[i] = 1;
-  125         }
-  126         m_deleteSpeedControllers = false;
-  127 }
-  128 
   137 RobotDrive::RobotDrive(SpeedController *frontLeftMotor, SpeedController *rearLeftMotor,
   138                                                 SpeedController *frontRightMotor, SpeedController *rearRightMotor)
   139 {
@@ -378,48 +334,7 @@
   516         
   517         m_safetyHelper->Feed();
   518 }
-  519 
-  533 void RobotDrive::MecanumDrive_Polar(float magnitude, float direction, float rotation)
-  534 {
-  535         static bool reported = false;
-  536         if (!reported)
-  537         {
-  538                 nUsageReporting::report(nUsageReporting::kResourceType_RobotDrive, GetNumMotors(), nUsageReporting::kRobotDrive_MecanumPolar);
-  539                 reported = true;
-  540         }
-  541 
-  542         // Normalized for full power along the Cartesian axes.
-  543         magnitude = Limit(magnitude) * sqrt(2.0);
-  544         // The rollers are at 45 degree angles.
-  545         double dirInRad = (direction + 45.0) * 3.14159 / 180.0;
-  546         double cosD = cos(dirInRad);
-  547         double sinD = sin(dirInRad);
-  548 
-  549         double wheelSpeeds[kMaxNumberOfMotors];
-  550         wheelSpeeds[kFrontLeftMotor] = sinD * magnitude + rotation;
-  551         wheelSpeeds[kFrontRightMotor] = cosD * magnitude - rotation;
-  552         wheelSpeeds[kRearLeftMotor] = cosD * magnitude + rotation;
-  553         wheelSpeeds[kRearRightMotor] = sinD * magnitude - rotation;
-  554 
-  555         Normalize(wheelSpeeds);
-  556 
-  557         uint8_t syncGroup = 0x80;
-  558 
-  559         m_frontLeftMotor->Set(wheelSpeeds[kFrontLeftMotor] * m_invertedMotors[kFrontLeftMotor] * m_maxOutput, syncGroup);
-  560         m_frontRightMotor->Set(wheelSpeeds[kFrontRightMotor] * m_invertedMotors[kFrontRightMotor] * m_maxOutput, syncGroup);
-  561         m_rearLeftMotor->Set(wheelSpeeds[kRearLeftMotor] * m_invertedMotors[kRearLeftMotor] * m_maxOutput, syncGroup);
-  562         m_rearRightMotor->Set(wheelSpeeds[kRearRightMotor] * m_invertedMotors[kRearRightMotor] * m_maxOutput, syncGroup);
-  563 
-  564         CANJaguar::UpdateSyncGroup(syncGroup);
-  565         
-  566         m_safetyHelper->Feed();
-  567 }
   568 
-  580 void RobotDrive::HolonomicDrive(float magnitude, float direction, float rotation)
-  581 {
-  582         MecanumDrive_Polar(magnitude, direction, rotation);
-  583 }
-  584 
   592 void RobotDrive::SetLeftRightMotorOutputs(float leftOutput, float rightOutput)
   593 {
   594         wpi_assert(m_rearLeftMotor != NULL && m_rearRightMotor != NULL);
