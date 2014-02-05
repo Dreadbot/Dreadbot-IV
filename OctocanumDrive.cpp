@@ -1,39 +1,15 @@
-// Parker Stebbins-2.2.14
-
 #include "OctocanumDrive.h"
-
 
 OctocanumDrive::OctocanumDrive()
 {
 	for (uint8_t i = 0; i <= 3; i++) {
-		drive[i]->motor = new Talon(1);
-		drive[i]->valve = new Solenoid(1);
+		drive[i]->motor = new Talon(i + 1);
+		//drive[i]->valve = new Solenoid(i + 1);
 	}
 
 	SmartDashboard::PutBoolean("ODrive.Enabled", false);
 	SmartDashboard::PutBoolean("ODrive.Traction", false);
 }
-
-/*OctocanumDrive::OctocanumDrive(uint32_t flPWMChannel, uint32_t frPWMChannel, 
-				uint32_t rlPWMChannel, uint32_t rrPWMChannel)
-{
-	drive[kFrontLeft]->motor = new Talon(PWMmodule, flPWMChannel);
-	drive[kFrontLeft]->valve = new Solenoid(1);
-
-	drive[kFrontRight]->motor = new Talon(PWMmodule, frPWMChannel);
-	drive[kFrontRight]->valve = new Solenoid(2);
-
-	drive[kRearLeft]->motor = new Talon(PWMmodule, rlPWMChannel);
-	drive[kRearLeft]->valve = new Solenoid(3);
-
-	drive[kRearRight]->motor = new Talon(PWMmodule, rrPWMChannel);
-	drive[kRearRight]->valve = new Solenoid(4);
-
-	SmartDashboardPutBoolean("ODrive.Enabled", false);
-	SmartDashboard::PutBoolean("ODrive.Traction", false);
-}*/
-
-
 
 void OctocanumDrive::Enable()
 {
@@ -47,7 +23,7 @@ void OctocanumDrive::Disable()
 	for (uint8_t i = 0; i <= 3; i++) {
 		drive[i]->motor->Disable();
 	}
-	enabled = false;// Wait, what?
+	enabled = false;
 	SmartDashboard::PutBoolean("ODrive.Enabled", false);
 }
 
@@ -55,15 +31,13 @@ void OctocanumDrive::Drop()
 {
 	if (tractionMode || !enabled) return;
 	phaseChange = true;
-//	if (abs(drive[1]) + abs(drive[2]) + abs(drive[3]) + abs(drive[4]) > 0.05) {
-//		for (uint8_t i = 0; i <= 3; i++) {
-//			drive[i]->motor->Set(0, syncGroup);
-//		}
-//	}
 	for (uint8_t i = 0; i <= 3; i++) {
-		drive[i]->valve->Set(false);
+		drive[i]->motor->Set(0, syncGroup);
 	}
-	Wait(2.5);// Time that
+	for (uint8_t i = 0; i <= 3; i++) {
+		//drive[i]->valve->Set(false);
+	}
+	Wait(1);// Time that
 	tractionMode = true;
 	phaseChange = false;
 	SmartDashboard::PutBoolean("ODrive.Traction", true);
@@ -74,9 +48,9 @@ void OctocanumDrive::Raise()
 	if (!tractionMode || !enabled) return;
 	phaseChange = true;
 	for (uint8_t i = 0; i <= 3; i++) {
-		drive[i]->valve->Set(false);
+		//drive[i]->valve->Set(false);
 	}
-	Wait(2);
+	Wait(1);
 	dropped = false;
 	phaseChange = false;
 	SmartDashboard::PutBoolean("ODrive.Traction", false);
@@ -165,7 +139,7 @@ void OctocanumDrive::Drive(float x, float y, float rotation)
 		MechanumDrive(x, y, rotation, 0.0);
 	} else 
 	{
-		ArcadeDrive(sqrt(x*x+y*y), rotation, false);
+		ArcadeDrive(sqrt(x*x + y*y), rotation, false);
 	}
 }
 
