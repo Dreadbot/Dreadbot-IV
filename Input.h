@@ -7,11 +7,11 @@
 #include "WPIlib.h"
 #include "OctocanumDrive.h"
 
+// Buttons
+static const uint32_t MODE_TRACTION = 1;
+static const uint32_t MODE_MECANUM = 2;
 
-static const uint32_t MODE_TRACTION = 0;
-static const uint32_t MODE_MECANUM = 1;
-static const uint32_t SETUPSHOOT = 1;
-static const uint32_t FIRE = 2;
+// Axii
 static const uint32_t STRAFE_X = 1;
 static const uint32_t STRAFE_Y = 2;
 static const uint32_t ROTATE = 3;
