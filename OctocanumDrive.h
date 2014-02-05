@@ -44,6 +44,7 @@ public:
 	void Drop();
 	void Raise();
 	bool GetMode();
+	bool GetEnabled();
 
 	void Drive(float x, float y, float rotation);
 };
