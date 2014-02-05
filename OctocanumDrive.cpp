@@ -153,6 +153,11 @@ void OctocanumDrive::SetOutputs(float leftOutput, float rightOutput)
 
 bool OctocanumDrive::GetMode() 
 {
+	return tractionMode;
+}
+
+bool OctocanumDrive::GetEnabled()
+{
 	return enabled;
 }
 
