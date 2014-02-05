@@ -1,3 +1,5 @@
+//this will be the official main class
+
 #include "WPILib.h"
 #include "Input.h"
 
