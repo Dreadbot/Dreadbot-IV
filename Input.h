@@ -4,15 +4,14 @@
 #include "WPIlib.h"
 #include "OctocanumDrive.h"
 
-	#define PROFILE_1
-	#ifdef PROFILE_1
-		const int MODETOGGLE = 0;
-		const int SETUPSHOOT = 1;
-		const int FIRE = 2;
-		const int STRAFE_X = 1;
-		const int STRAFE_Y = 2;
-		const int ROTATE = 3;
-	#endif
+
+static const uint32_t MODETOGGLE = 0;
+static const uint32_t SETUPSHOOT = 1;
+static const uint32_t FIRE = 2;
+static const uint32_t STRAFE_X = 1;
+static const uint32_t STRAFE_Y = 2;
+static const uint32_t ROTATE = 3;
+
 
 class Input 
 {
