@@ -27,7 +27,7 @@ void OctocanumDrive::Disable()
 	SmartDashboard::PutBoolean("ODrive.Enabled", false);
 }
 
-void OctocanumDrive::Drop() 
+void OctocanumDrive::Drop()
 {
 	if (tractionMode || !enabled) return;
 	phaseChange = true;
@@ -201,3 +201,15 @@ float OctocanumDrive::Limit(float num)
 	}
 	return num;
 }
+
+void OctocanumDrive::Toggle()
+{
+	if (!enabled)
+		return;
+	
+	if (tractionMode)
+		Drop();
+	else
+		Raise();
+}
+
