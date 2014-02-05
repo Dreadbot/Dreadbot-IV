@@ -1,6 +1,3 @@
-// Parker Stebbins (2.2.14)
-// THIS HEADER FILE IS POSSESSED BY SATAN
-
 #ifndef OCTOCANUMDRIVE_H_
 #define OCTOCANUMDRIVE_H_
 
@@ -11,10 +8,8 @@ const double maxOutput = 1.0;
 const uint8_t syncGroup = 0x80;
 
 struct OctocanumModule {
-	Solenoid *valve;
+	//Solenoid *valve;
 	Talon *motor;
-	Encoder *encoder;
-	float speed;
 };
 
 class OctocanumDrive 
@@ -23,8 +18,8 @@ class OctocanumDrive
 
 	bool tractionMode;
 	bool enabled;
-	bool dropped;// just avoid having the wheels dropped when the robot disables.
-	bool phaseChange;// true when the wheels are changing phase
+	bool dropped;// just avoid having the wheels dropped when the robot disables
+	bool phaseChange;
 	typedef enum 
 	{
 		kFrontLeft,
@@ -43,7 +38,6 @@ class OctocanumDrive
 	void ArcadeDrive(float moveValue, float rotateValue, bool squaredInputs);
 public:
 	OctocanumDrive();
-	//OctocanumDrive(uint32_t flChannel, uint32_t frChannel, uint32_t rlChannel, uint32_t rrChannel, uint8_t module);
 
 	void Enable();
 	void Disable();
@@ -53,7 +47,5 @@ public:
 
 	void Drive(float x, float y, float rotation);
 };
-
-
 
 #endif
