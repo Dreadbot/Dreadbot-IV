@@ -10,10 +10,10 @@ class Robot : public IterativeRobot {
 public:
 	
 void Robot::RobotInit() {
+	SmartDashboard::init();
 	gamepad = new Joystick(1);
 	drivetrain = new OctocanumDrive();
 	input = new Input(gamepad, drivetrain);
-	SmartDashboard::init();
 }
 
 void Robot::DisabledInit() {
