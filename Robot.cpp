@@ -29,6 +29,7 @@ void Robot::AutonomousPeriodic() {
 }
 
 void Robot::TeleopInit() {
+	drivetrain->Enable();
 }
 
 void Robot::TeleopPeriodic() {
