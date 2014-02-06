@@ -7,8 +7,8 @@ OctocanumDrive::OctocanumDrive()
 		//drive[i]->valve = new Solenoid(i + 1);
 	}
 
-	SmartDashboard::PutBoolean("ODrive.Enabled", false);
-	SmartDashboard::PutBoolean("ODrive.Traction", false);
+	//SmartDashboard::PutBoolean("ODrive.Enabled", false);
+	//SmartDashboard::PutBoolean("ODrive.Traction", false);
 }
 
 void OctocanumDrive::Enable()
