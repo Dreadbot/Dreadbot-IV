@@ -1,3 +1,6 @@
+// This software is the property of satan
+
+
 #ifndef _INPUT_H_
 #define _INPUT_H_
 
