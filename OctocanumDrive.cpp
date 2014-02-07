@@ -1,4 +1,5 @@
 //PLZ DO NOT EDIT THIS, IT WORKS GOODLY
+// FIRSST
 #include "OctocanumDrive.h"
 
 OctocanumDrive::OctocanumDrive()
@@ -139,7 +140,7 @@ void OctocanumDrive::Drive(float x, float y, float rotation)
 		MechanumDrive(x, y, rotation, 0.0);
 	} else 
 	{
-		ArcadeDrive(y, rotation, true);
+		ArcadeDrive(y, X, true);
 	}
 }
 
