@@ -1,9 +1,11 @@
+//PLZ DO NOT EDIT THIS, IT WORKS GOODLY
 #include "OctocanumDrive.h"
 
 OctocanumDrive::OctocanumDrive()
 {
-	for (uint8_t i = 0; i <= 3; i++) {
-		drive[i]->motor = new Talon(i + 1);
+	for (uint8_t i = 0; i <= 3; i++) 
+	{
+		drive[i] = new OctocanumModule(i + 1);
 		//drive[i]->valve = new Solenoid(i + 1);
 	}
 
@@ -15,6 +17,7 @@ void OctocanumDrive::Enable()
 {
 	enabled = true;
 	SmartDashboard::PutBoolean("ODrive.Enabled", true);
+	SmartDashboard::PutBoolean("ODrive.Traction", false);
 }
 
 void OctocanumDrive::Disable()
@@ -32,7 +35,7 @@ void OctocanumDrive::Drop()
 	if (tractionMode || !enabled) return;
 	phaseChange = true;
 	for (uint8_t i = 0; i <= 3; i++) {
-		drive[i]->motor->Set(0, syncGroup);
+		drive[i]->motor->Set(0);
 	}
 	for (uint8_t i = 0; i <= 3; i++) {
 		//drive[i]->valve->Set(false);
@@ -51,7 +54,7 @@ void OctocanumDrive::Raise()
 		//drive[i]->valve->Set(false);
 	}
 	Wait(1);
-	dropped = false;
+	tractionMode = false;
 	phaseChange = false;
 	SmartDashboard::PutBoolean("ODrive.Traction", false);
 }
@@ -59,8 +62,6 @@ void OctocanumDrive::Raise()
 
 void OctocanumDrive::MechanumDrive(float x, float y, float rotation, float gyroAngle = 0.0) 
 {
-	if (dropped) return;
-
 	double xIn = x;
 	double yIn = -y;
 	if (gyroAngle != 0.0) 
@@ -68,28 +69,26 @@ void OctocanumDrive::MechanumDrive(float x, float y, float rotation, float gyroA
 		RotateVector(xIn, yIn, gyroAngle);
 	}
 	double wheelSpeeds[] = {
-		xIn + yIn + rotation,
-		-xIn + yIn - rotation,
+		xIn + yIn - rotation,
 		-xIn + yIn + rotation,
-		xIn + yIn - rotation
+		-xIn + yIn - rotation,
+		xIn + yIn + rotation
 	};
 	Normalize(wheelSpeeds);
 
-	drive[kFrontLeft]->motor->Set(wheelSpeeds[kFrontLeft] * maxOutput);
-	drive[kFrontRight]->motor->Set(wheelSpeeds[kFrontRight] * maxOutput);
-	drive[kRearLeft]->motor->Set(wheelSpeeds[kRearLeft] * maxOutput);
-	drive[kRearRight]->motor->Set(wheelSpeeds[kRearRight] * maxOutput);
+	drive[kFrontLeft]->motor->Set(wheelSpeeds[kFrontLeft]);
+	drive[kFrontRight]->motor->Set(wheelSpeeds[kFrontRight]);
+	drive[kRearLeft]->motor->Set(wheelSpeeds[kRearLeft]);
+	drive[kRearRight]->motor->Set(wheelSpeeds[kRearRight]);
 }
 
 void OctocanumDrive::ArcadeDrive(float moveValue, float rotateValue, bool squaredInputs = false) 
 {
-	if (!dropped) return;
-
 	// local variables to hold the computed PWM values for the motors
 	float leftMotorOutput;
 	float rightMotorOutput;
 
-	moveValue = Limit(moveValue);
+	moveValue = -Limit(moveValue);
 	rotateValue = Limit(rotateValue);
 
 	if (squaredInputs) 
@@ -127,6 +126,7 @@ void OctocanumDrive::ArcadeDrive(float moveValue, float rotateValue, bool square
 			rightMotorOutput = -max(-moveValue, -rotateValue);
 		}
 	}
+
 	SetOutputs(leftMotorOutput, rightMotorOutput);
 }
 
@@ -134,21 +134,21 @@ void OctocanumDrive::ArcadeDrive(float moveValue, float rotateValue, bool square
 // Takes the desired x velocity, y velocity, and rotational speed
 void OctocanumDrive::Drive(float x, float y, float rotation) 
 {
-	if (dropped) 
+	if (tractionMode) 
 	{
 		MechanumDrive(x, y, rotation, 0.0);
 	} else 
 	{
-		ArcadeDrive(sqrt(x*x + y*y), rotation, false);
+		ArcadeDrive(y, rotation, true);
 	}
 }
 
 void OctocanumDrive::SetOutputs(float leftOutput, float rightOutput)
 {
-	drive[kFrontLeft]->motor->Set(Limit(leftOutput) * maxOutput, syncGroup);
-	drive[kRearLeft]->motor->Set(Limit(leftOutput) * maxOutput, syncGroup);
-	drive[kFrontRight]->motor->Set(-Limit(rightOutput) * maxOutput, syncGroup);
-	drive[kRearRight]->motor->Set(-Limit(rightOutput) * maxOutput, syncGroup);
+	drive[kFrontLeft]->motor->Set(Limit(leftOutput));
+	drive[kRearLeft]->motor->Set(Limit(leftOutput));
+	drive[kFrontRight]->motor->Set(Limit(rightOutput));
+	drive[kRearRight]->motor->Set(Limit(rightOutput));
 }
 
 bool OctocanumDrive::GetMode() 
@@ -207,7 +207,7 @@ void OctocanumDrive::Toggle()
 	if (!enabled)
 		return;
 	
-	if (tractionMode)
+	if (!tractionMode)
 		Drop();
 	else
 		Raise();
