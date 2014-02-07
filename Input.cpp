@@ -14,6 +14,12 @@ void Input::Update()
 		stick->GetRawAxis(ROTATE)
 	);
 	
+	
+	SmartDashboard::PutNumber("Stafe_x: ", stick->GetRawAxis(STRAFE_X));
+	SmartDashboard::PutNumber("Stafe_y: ", stick->GetRawAxis(STRAFE_Y));
+	SmartDashboard::PutNumber("rot: ", stick->GetRawAxis(ROTATE));
+	SmartDashboard::PutBoolean("button: ", stick->GetRawButton(MODE_TOGGLE));
+	
 	if (stick->GetRawButton(MODE_TOGGLE))
 		drive->Toggle();
 }
