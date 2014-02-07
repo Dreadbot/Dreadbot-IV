@@ -10,6 +10,11 @@ const uint8_t syncGroup = 0x80;
 struct OctocanumModule {
 	//Solenoid *valve;
 	Talon *motor;
+	
+	OctocanumModule(uint8_t i)
+	{
+		motor = new Talon(i);
+	}
 };
 
 class OctocanumDrive 
@@ -18,7 +23,6 @@ class OctocanumDrive
 
 	bool tractionMode;
 	bool enabled;
-	bool dropped;// just avoid having the wheels dropped when the robot disables
 	bool phaseChange;
 	typedef enum 
 	{
