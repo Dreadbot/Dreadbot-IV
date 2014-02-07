@@ -69,10 +69,10 @@ void OctocanumDrive::MechanumDrive(float x, float y, float rotation, float gyroA
 		RotateVector(xIn, yIn, gyroAngle);
 	}
 	double wheelSpeeds[] = {
-		xIn + yIn - rotation,
-		-xIn + yIn + rotation,
+		xIn + yIn + rotation,
 		-xIn + yIn - rotation,
-		xIn + yIn + rotation
+		-xIn + yIn + rotation,
+		xIn + yIn - rotation
 	};
 	Normalize(wheelSpeeds);
 
@@ -89,7 +89,7 @@ void OctocanumDrive::ArcadeDrive(float moveValue, float rotateValue, bool square
 	float rightMotorOutput;
 
 	moveValue = -Limit(moveValue);
-	rotateValue = Limit(rotateValue);
+	rotateValue = -Limit(rotateValue);
 
 	if (squaredInputs) 
 	{
