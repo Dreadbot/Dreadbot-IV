@@ -20,6 +20,10 @@ void Input::Update()
 	SmartDashboard::PutNumber("rot: ", stick->GetRawAxis(ROTATE));
 	SmartDashboard::PutBoolean("button: ", stick->GetRawButton(MODE_TOGGLE));
 	
-	if (stick->GetRawButton(MODE_TOGGLE))
-		drive->Toggle();
+	//if (stick->GetRawButton(MODE_TOGGLE))
+		//drive->Toggle();
+if (stick->GetRawButton(MODE_MEC))
+drive->Raise();
+if (stick->GetRawButton(MODE_TRAC))
+drive->Drop();
 }
