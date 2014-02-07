@@ -9,7 +9,8 @@ class Robot : public IterativeRobot {
 	Input* input;
 public:
 	
-void Robot::RobotInit() {
+void Robot::RobotInit() 
+{
 	SmartDashboard::init();
 	gamepad = new Joystick(1);
 	drivetrain = new OctocanumDrive();
