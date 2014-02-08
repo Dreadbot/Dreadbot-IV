@@ -1,9 +1,9 @@
 #include "Shooter.h"
 
-Shooter::Shooter(Jaguar* newMotor, Encoder* newPot)
+Shooter::Shooter(Talon* _motor, Encoder* _pot)
 {
-	winch = newMotor;
-	pot = newPot;
+	winch = _motor;
+	pot = _pot;
 }
 void Shooter::release()
 {

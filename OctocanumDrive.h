@@ -49,7 +49,6 @@ public:
 	void Raise();
 	bool GetMode();
 	bool GetEnabled();
-	void Toggle();//toggle the mode
 
 	void Drive(float x, float y, float rotation);
 };

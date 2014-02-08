@@ -140,7 +140,7 @@ void OctocanumDrive::Drive(float x, float y, float rotation)
 		MechanumDrive(x, y, rotation, 0.0);
 	} else 
 	{
-		ArcadeDrive(y, X, true);
+		ArcadeDrive(y, x, true);
 	}
 }
 
@@ -202,15 +202,3 @@ float OctocanumDrive::Limit(float num)
 	}
 	return num;
 }
-
-void OctocanumDrive::Toggle()
-{
-	if (!enabled)
-		return;
-	
-	if (!tractionMode)
-		Drop();
-	else
-		Raise();
-}
-
