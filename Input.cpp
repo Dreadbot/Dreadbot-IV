@@ -1,9 +1,9 @@
 #include "Input.h"
 
-Input::Input(Joystick* _stick, OctocanumDrive* _drive)
+Input::Input(Joystick* newStick, OctocanumDrive* newDrive)
 {
-	stick = _stick;
-	drive = _drive;
+	stick = newStick;
+	drive = newDrive;
 }
 
 void Input::Update()

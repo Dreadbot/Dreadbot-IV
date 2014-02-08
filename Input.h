@@ -17,10 +17,10 @@ static const uint32_t ROTATE = 1;
 
 class Input 
 {
-	Joystick * stick;
+	Joystick* stick;
 	OctocanumDrive* drive;
 public:
-	Input(Joystick* _stick, OctocanumDrive* _drive);
+	Input(Joystick* newStick, OctocanumDrive* newDrive);
 	void Update();
 };
 
