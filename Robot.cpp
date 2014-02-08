@@ -7,6 +7,7 @@ class Robot : public IterativeRobot {
 	Joystick* gamepad; 
 	OctocanumDrive* drivetrain;
 	Input* input;
+	Compressor* compress;
 public:
 	
 void Robot::RobotInit() 
@@ -15,6 +16,7 @@ void Robot::RobotInit()
 	gamepad = new Joystick(1);
 	drivetrain = new OctocanumDrive();
 	input = new Input(gamepad, drivetrain);
+	compress = new Compressor(1, 8);
 }
 
 void Robot::DisabledInit() {
@@ -31,6 +33,7 @@ void Robot::AutonomousPeriodic() {
 
 void Robot::TeleopInit() {
 	drivetrain->Enable();
+	compress->Start();
 }
 
 void Robot::TeleopPeriodic() {
