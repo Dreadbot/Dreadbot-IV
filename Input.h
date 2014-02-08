@@ -9,9 +9,9 @@
 static const uint32_t MODE_TOGGLE = 3;
 
 // Axii
-static const uint32_t STRAFE_X = 4;
-static const uint32_t STRAFE_Y = 5;
-static const uint32_t ROTATE = 1;
+static const uint32_t STRAFE_X = 1;
+static const uint32_t STRAFE_Y = 2;
+static const uint32_t ROTATE = 4;
 
 
 class Input 
