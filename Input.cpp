@@ -8,14 +8,23 @@ Input::Input(Joystick* newStick, OctocanumDrive* newDrive)
 
 void Input::Update()
 {
+	float x = stick->GetRawAxis(STRAFE_X);
+	float y = stick->GetRawAxis(STRAFE_Y);
+	float r = stick->GetRawAxis(ROTATE);
+	
+	if (x < 0.1 && x > -0.1)
+		x = 0;
+	if (y < 0.1 && y > -0.1)
+		y = 0;
+	if (r < 0.1 && r > -0.1)
+		r = 0;
+	
 	drive->Drive(
-		stick->GetRawAxis(STRAFE_X),
-		stick->GetRawAxis(STRAFE_Y),
-		stick->GetRawAxis(ROTATE)
+		x,
+		y,
+		r
 	);
 	
-	//if (stick->GetRawButton(MODE_TOGGLE))
-		//drive->Toggle();
 	if (stick->GetRawAxis(MODE_TOGGLE) < -0.5)
 		drive->Raise();
 	else
