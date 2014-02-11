@@ -67,12 +67,19 @@ void OctocanumDrive::MechanumDrive(float x, float y, float rotation, float gyroA
 	{
 		RotateVector(xIn, yIn, gyroAngle);
 	}
-	double wheelSpeeds[] = {
+	double wheelSpeeds[] =
+	{
 		xIn + yIn - rotation,  
 		-xIn + yIn - rotation,
 		-xIn + yIn + rotation,
-		xIn + yIn + rotation};
+		xIn + yIn + rotation 
+	};
 	Normalize(wheelSpeeds);
+	
+	SmartDashboard::PutNumber("kFrontLeft", wheelSpeeds[kFrontLeft]);
+	SmartDashboard::PutNumber("kFrontRight", wheelSpeeds[kFrontRight]);
+	SmartDashboard::PutNumber("kRearLeft", wheelSpeeds[kRearLeft]);
+	SmartDashboard::PutNumber("kRearRight", wheelSpeeds[kRearRight]);
 
 	drive[kFrontLeft]->motor->Set(wheelSpeeds[kFrontLeft] * maxOutput);
 	drive[kFrontRight]->motor->Set(wheelSpeeds[kFrontRight] * maxOutput);
