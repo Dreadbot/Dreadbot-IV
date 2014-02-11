@@ -1,5 +1,3 @@
-//PLZ DO NOT EDIT THIS, IT WORKS GOODLY
-// FIRSST
 #include "OctocanumDrive.h"
 
 OctocanumDrive::OctocanumDrive()
@@ -7,7 +5,7 @@ OctocanumDrive::OctocanumDrive()
 	for (uint8_t i = 0; i <= 3; i++) 
 	{
 		drive[i] = new OctocanumModule(i + 1);
-		//drive[i]->valve = new Solenoid(i + 1);
+		drive[i]->valve = new Solenoid(i + 1);
 	}
 
 	//SmartDashboard::PutBoolean("ODrive.Enabled", false);
@@ -39,7 +37,7 @@ void OctocanumDrive::Drop()
 		drive[i]->motor->Set(0);
 	}
 	for (uint8_t i = 0; i <= 3; i++) {
-		//drive[i]->valve->Set(false);
+		drive[i]->valve->Set(false);
 	}
 	Wait(1);// Time that
 	tractionMode = true;
@@ -52,7 +50,7 @@ void OctocanumDrive::Raise()
 	if (!tractionMode || !enabled) return;
 	phaseChange = true;
 	for (uint8_t i = 0; i <= 3; i++) {
-		//drive[i]->valve->Set(false);
+		drive[i]->valve->Set(false);
 	}
 	Wait(1);
 	tractionMode = false;
@@ -70,17 +68,16 @@ void OctocanumDrive::MechanumDrive(float x, float y, float rotation, float gyroA
 		RotateVector(xIn, yIn, gyroAngle);
 	}
 	double wheelSpeeds[] = {
-		xIn + yIn + rotation,
+		xIn + yIn - rotation,  
 		-xIn + yIn - rotation,
 		-xIn + yIn + rotation,
-		xIn + yIn - rotation
-	};
+		xIn + yIn + rotation};
 	Normalize(wheelSpeeds);
 
-	drive[kFrontLeft]->motor->Set(wheelSpeeds[kFrontLeft]);
-	drive[kFrontRight]->motor->Set(wheelSpeeds[kFrontRight]);
-	drive[kRearLeft]->motor->Set(wheelSpeeds[kRearLeft]);
-	drive[kRearRight]->motor->Set(wheelSpeeds[kRearRight]);
+	drive[kFrontLeft]->motor->Set(wheelSpeeds[kFrontLeft] * maxOutput);
+	drive[kFrontRight]->motor->Set(wheelSpeeds[kFrontRight] * maxOutput);
+	drive[kRearLeft]->motor->Set(-wheelSpeeds[kRearLeft] * maxOutput);
+	drive[kRearRight]->motor->Set(-wheelSpeeds[kRearRight] * maxOutput);
 }
 
 void OctocanumDrive::ArcadeDrive(float moveValue, float rotateValue, bool squaredInputs = false) 
@@ -140,16 +137,16 @@ void OctocanumDrive::Drive(float x, float y, float rotation)
 		MechanumDrive(x, y, rotation, 0.0);
 	} else 
 	{
-		ArcadeDrive(y, x, true);
+		ArcadeDrive(x, y, false);
 	}
 }
 
 void OctocanumDrive::SetOutputs(float leftOutput, float rightOutput)
 {
-	drive[kFrontLeft]->motor->Set(Limit(leftOutput));
-	drive[kRearLeft]->motor->Set(Limit(leftOutput));
-	drive[kFrontRight]->motor->Set(Limit(rightOutput));
-	drive[kRearRight]->motor->Set(Limit(rightOutput));
+	drive[kFrontLeft]->motor->Set(-Limit(leftOutput) * maxOutput);
+	drive[kRearLeft]->motor->Set(-Limit(leftOutput) * maxOutput);
+	drive[kFrontRight]->motor->Set(Limit(rightOutput) * maxOutput);
+	drive[kRearRight]->motor->Set(Limit(rightOutput) * maxOutput);
 }
 
 bool OctocanumDrive::GetMode() 

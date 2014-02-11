@@ -4,11 +4,11 @@
 #include "WPILib.h"
 #include <math.h>
 
-const double maxOutput = 1.0;
+const double maxOutput = 0.5;
 const uint8_t syncGroup = 0x80;
 
 struct OctocanumModule {
-	//Solenoid *valve;
+	Solenoid *valve;
 	Talon *motor;
 	
 	OctocanumModule(uint8_t i)
