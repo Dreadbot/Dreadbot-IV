@@ -19,12 +19,12 @@ void Input::Update()
 	if (r < 0.1 && r > -0.1)
 		r = 0;
 	
-	drive->Drive(-x, -y, r);
+	drive->Drive(-x, -y, -r);
 	
 	SmartDashboard::PutNumber("x", x);
 	
 	if (stick->GetRawAxis(MODE_TOGGLE) < -0.5)
-		drive->Raise();
-	else
 		drive->Drop();
+	else
+		drive->Raise();
 }
