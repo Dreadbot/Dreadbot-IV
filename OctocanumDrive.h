@@ -38,16 +38,15 @@ public:
 		return open;
 	}
 	
-	void Open() 
+	void Set(bool v) 
 	{
-		s0->Set(true);
-		s1->Set(false);
-	}
-	
-	void Close() 
-	{
-		s0->Set(false);
-		s1->Set(true);	
+		if (v) {
+			s0->Set(true);
+			s1->Set(false);
+		} else {
+			s0->Set(false);
+			s1->Set(true);
+		}
 	}
 };
 
