@@ -131,10 +131,10 @@ void OctocanumDrive::Drive(float x, float y, float rotation)
 {
 	if (tractionMode) 
 	{
-		MechanumDrive(x, y, rotation, 0.0);
+		MechanumDrive(-x, -y, -rotation, 0.0);
 	} else 
 	{
-		ArcadeDrive(x, rotation, true);
+		ArcadeDrive(-x, -rotation, true);
 	}
 }
 
