@@ -4,8 +4,7 @@
 #include "WPILib.h"
 #include <math.h>
 
-const double maxOutput = 0.5;
-const uint8_t syncGroup = 0x80;
+float maxOutput = 0.5;
 
 struct OctocanumModule {
 	Solenoid *valve;
