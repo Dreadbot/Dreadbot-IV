@@ -8,11 +8,13 @@ Input::Input(Joystick* newStick, OctocanumDrive* newDrive)
 
 void Input::Update()
 {
-	float x = 0, y = 0, z = 0;
+	float x = 0, y = 0, z = 0
+	float down = false;
 	try {
 		x = stick->GetRawAxis(STRAFE_X);
 		y = stick->GetRawAxis(STRAFE_Y);
 		r = stick->GetRawAxis(ROTATE);
+		down = stick->GetRawAxis(MODE_TOGGLE);
 	} catch (...) {}
 	if (x < 0.1 && x > -0.1)
 		x = 0;
@@ -27,7 +29,7 @@ void Input::Update()
 	SmartDashboard::PutNumber("Y-Axis", y);
 	SmartDashboard::PutNumber("Rotation", r);
 	
-	if (stick->GetRawAxis(MODE_TOGGLE) < -0.5)
+	if (down < -0.5)
 		drive->Drop();
 	else
 		drive->Raise();
