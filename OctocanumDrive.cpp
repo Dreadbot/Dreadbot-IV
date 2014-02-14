@@ -134,7 +134,7 @@ void OctocanumDrive::Drive(float x, float y, float rotation)
 		MechanumDrive(x, y, rotation, 0.0);
 	} else 
 	{
-		ArcadeDrive(x, y, false);
+		ArcadeDrive(x, rotation, true);
 	}
 }
 
