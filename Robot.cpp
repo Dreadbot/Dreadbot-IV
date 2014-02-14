@@ -33,7 +33,7 @@ void Robot::AutonomousPeriodic() {
 
 void Robot::TeleopInit() {
 	drivetrain->Enable();
-	//compress->Start();
+	compress->Start();
 }
 
 void Robot::TeleopPeriodic() {
