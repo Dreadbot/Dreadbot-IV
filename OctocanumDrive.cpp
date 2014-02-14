@@ -4,12 +4,8 @@ OctocanumDrive::OctocanumDrive()
 {
 	for (uint8_t i = 0; i <= 3; i++) 
 	{
-		drive[i] = new OctocanumModule(i + 1);
-		drive[i]->valve = new Solenoid(i + 1);
+		drive[i] = new OctocanumModule(i + 1, i + 1, i + 5);
 	}
-
-	//SmartDashboard::PutBoolean("ODrive.Enabled", false);
-	//SmartDashboard::PutBoolean("ODrive.Traction", false);
 }
 
 void OctocanumDrive::Enable()
@@ -34,12 +30,8 @@ void OctocanumDrive::Drop()
 	if (tractionMode || !enabled) return;
 	phaseChange = true;
 	for (uint8_t i = 0; i <= 3; i++) {
-		drive[i]->motor->Set(0);
-	}
-	for (uint8_t i = 0; i <= 3; i++) {
 		drive[i]->valve->Set(false);
 	}
-	Wait(1);// Time that
 	tractionMode = true;
 	phaseChange = false;
 	SmartDashboard::PutBoolean("ODrive.Traction", true);
@@ -52,7 +44,6 @@ void OctocanumDrive::Raise()
 	for (uint8_t i = 0; i <= 3; i++) {
 		drive[i]->valve->Set(false);
 	}
-	Wait(1);
 	tractionMode = false;
 	phaseChange = false;
 	SmartDashboard::PutBoolean("ODrive.Traction", false);
@@ -67,8 +58,7 @@ void OctocanumDrive::MechanumDrive(float x, float y, float rotation, float gyroA
 	{
 		RotateVector(xIn, yIn, gyroAngle);
 	}
-	double wheelSpeeds[] =
-	{
+	double wheelSpeeds[] = {
 		xIn + yIn - rotation,  
 		-xIn + yIn - rotation,
 		-xIn + yIn + rotation,
