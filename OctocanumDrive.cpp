@@ -2,10 +2,12 @@
 
 OctocanumDrive::OctocanumDrive()
 {
+	maxOutput = 1.0;
 	for (uint8_t i = 0; i <= 3; i++) 
 	{
 		drive[i] = new OctocanumModule(i + 1, i + 1, i + 5);
 	}
+	valve = new Valve(1, 2);
 }
 
 void OctocanumDrive::Enable()
@@ -30,8 +32,9 @@ void OctocanumDrive::Drop()
 	if (tractionMode || !enabled) return;
 	phaseChange = true;
 	for (uint8_t i = 0; i <= 3; i++) {
-		drive[i]->valve->Set(false);
+		//drive[i]->valve->Set(false);
 	}
+	valve->Set(false);
 	tractionMode = true;
 	phaseChange = false;
 	SmartDashboard::PutBoolean("ODrive.Traction", true);
@@ -42,8 +45,9 @@ void OctocanumDrive::Raise()
 	if (!tractionMode || !enabled) return;
 	phaseChange = true;
 	for (uint8_t i = 0; i <= 3; i++) {
-		drive[i]->valve->Set(false);
+		//drive[i]->valve->Set(false);
 	}
+	valve->Set(true);
 	tractionMode = false;
 	phaseChange = false;
 	SmartDashboard::PutBoolean("ODrive.Traction", false);

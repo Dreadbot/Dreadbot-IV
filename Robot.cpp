@@ -19,32 +19,40 @@ void Robot::RobotInit()
 	compress = new Compressor(1, 8);
 }
 
-void Robot::DisabledInit() {
+void Robot::DisabledInit()
+{
 }
 
-void Robot::DisabledPeriodic() {
+void Robot::DisabledPeriodic()
+{
 }
 
-void Robot::AutonomousInit() {
+void Robot::AutonomousInit()
+{
 }
 
-void Robot::AutonomousPeriodic() {
+void Robot::AutonomousPeriodic()
+{
 }
 
-void Robot::TeleopInit() {
+void Robot::TeleopInit()
+{
 	drivetrain->Enable();
 	compress->Start();
 }
 
-void Robot::TeleopPeriodic() {
+void Robot::TeleopPeriodic() 
+{
 	input->Update();
 }
 
-void Robot::TestInit() {
+void Robot::TestInit()
+{
 }
 
 
-void Robot::TestPeriodic() {
+void Robot::TestPeriodic()
+{
 }
 
 };

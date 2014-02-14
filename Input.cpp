@@ -4,18 +4,19 @@ Input::Input(Joystick* newStick, OctocanumDrive* newDrive)
 {
 	stick = newStick;
 	drive = newDrive;
+	ifMecanum = true;
+	buttonOverride = false; //Start with toggle disable
 }
 
 void Input::Update()
 {
-	float x = 0, y = 0, z = 0
-	float down = false;
-	try {
+	float x = 0, y = 0, r = 0, down = 0;
+	//try {
 		x = stick->GetRawAxis(STRAFE_X);
 		y = stick->GetRawAxis(STRAFE_Y);
 		r = stick->GetRawAxis(ROTATE);
 		down = stick->GetRawAxis(MODE_TOGGLE);
-	} catch (...) {}
+	//} catch (...) {}
 	if (x < 0.1 && x > -0.1)
 		x = 0;
 	if (y < 0.1 && y > -0.1)
@@ -28,9 +29,30 @@ void Input::Update()
 	SmartDashboard::PutNumber("X-Axis", x);
 	SmartDashboard::PutNumber("Y-Axis", y);
 	SmartDashboard::PutNumber("Rotation", r);
+	SmartDashboard::PutBoolean("Mecanum mode: ", ifMecanum);
+	SmartDashboard::PutBoolean("buttonOverride: ", buttonOverride);
 	
-	if (down < -0.5)
-		drive->Drop();
+	if (stick->GetRawButton(5))
+	{ //Toggle button override mode (left)
+		buttonOverride = !buttonOverride;
+	}
+	
+	if (!buttonOverride)
+	{ //Trigger mode
+		if (down < -0.5) drive->Raise();
+		else drive->Drop();
+	}
 	else
-		drive->Raise();
+	{ //Button mode
+		if (stick->GetRawButton(6))
+		{ //Toggle mecanum mode
+			ifMecanum = !ifMecanum;
+		}
+		
+		if (ifMecanum)
+		{ //Actually get around to switching wheels.
+			drive->Raise(); //Mecanum
+		}
+		else drive->Drop(); //Traction
+	}
 }

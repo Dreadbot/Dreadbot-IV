@@ -4,31 +4,18 @@
 #include "WPILib.h"
 #include <math.h>
 
-float maxOutput = 0.5;
-
-struct OctocanumModule
-{
-	Valve *valve;
-	Talon *motor;
-	
-	OctocanumModule(uint8_t i, uint8_t vTop, uint8_t vBottom)
-	{
-		motor = new Talon(i);
-		valve = new Valve(vTop, vBottom);
-		
-	}
-};
 
 // This is actually a thing
 class Valve
 {
 	Solenoid *s0;
 	Solenoid *s1;
-	open = false;
+	bool open;
 	
 public:
 	Valve(uint8_t p_s0, uint8_t p_s1)
 	{
+		open = false;
 		s0 = new Solenoid(p_s0);
 		s1 = new Solenoid(p_s1);
 	}
@@ -40,23 +27,33 @@ public:
 	
 	void Set(bool v) 
 	{
-		if (v) {
-			s0->Set(true);
-			s1->Set(false);
-		} else {
-			s0->Set(false);
-			s1->Set(true);
-		}
+		s1->Set(!v);
+		s0->Set(v);
+	}
+};
+
+struct OctocanumModule
+{
+	//Valve *valve;
+	Talon *motor;
+	
+	OctocanumModule(uint8_t i, uint8_t vTop, uint8_t vBottom)
+	{
+		motor = new Talon(i);
+		//valve = new Valve(vTop, vBottom);
+		
 	}
 };
 
 class OctocanumDrive 
 {
 	OctocanumModule *drive[4];
-
+	
+	float maxOutput;
 	bool tractionMode;
 	bool enabled;
 	bool phaseChange;
+	Valve *valve;
 	typedef enum 
 	{
 		kFrontLeft,

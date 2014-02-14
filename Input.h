@@ -18,6 +18,9 @@ class Input
 {
 	Joystick* stick;
 	OctocanumDrive* drive;
+	
+	bool ifMecanum;
+	bool buttonOverride; //Is the user using the trigger or the bumper?
 public:
 	Input(Joystick* newStick, OctocanumDrive* newDrive);
 	void Update();
