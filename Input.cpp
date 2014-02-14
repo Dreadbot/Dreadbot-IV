@@ -21,7 +21,7 @@ void Input::Update()
 	if (r < 0.1 && r > -0.1)
 		r = 0;
 	
-	drive->Drive(-x, -y, -r);
+	drive->Drive(x, y, r);
 	
 	SmartDashboard::PutNumber("X-Axis", x);
 	SmartDashboard::PutNumber("Y-Axis", y);
