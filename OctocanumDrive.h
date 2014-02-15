@@ -48,8 +48,6 @@ struct OctocanumModule
 class OctocanumDrive 
 {
 	OctocanumModule *drive[4];
-	
-	float maxOutput;
 	bool tractionMode;
 	bool enabled;
 	bool phaseChange;
@@ -70,15 +68,18 @@ class OctocanumDrive
 
 	void MechanumDrive(float x, float y, float rotation, float gyroAngle);
 	void ArcadeDrive(float moveValue, float rotateValue, bool squaredInputs);
+	bool eggEnabled;
 public:
+	float maxOutput;
+	
 	OctocanumDrive();
-
 	void Enable();
 	void Disable();
 	void Drop();
 	void Raise();
 	bool GetMode();
 	bool GetEnabled();
+	void toggleEgg();
 
 	void Drive(float x, float y, float rotation);
 };

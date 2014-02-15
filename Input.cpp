@@ -6,6 +6,7 @@ Input::Input(Joystick* newStick, OctocanumDrive* newDrive)
 	drive = newDrive;
 	ifMecanum = true;
 	buttonOverride = false; //Start with toggle disable
+	eggMode = false;
 }
 
 void Input::Update()
@@ -36,6 +37,8 @@ void Input::Update()
 	{ //Toggle button override mode (left)
 		buttonOverride = !buttonOverride;
 	}
+	if (stick->GetRawButton(9) && stick->GetRawButton(10)) drive->toggleEgg();
+	
 	
 	if (!buttonOverride)
 	{ //Trigger mode

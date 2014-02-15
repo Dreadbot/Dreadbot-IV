@@ -136,10 +136,24 @@ void OctocanumDrive::Drive(float x, float y, float rotation)
 	if (tractionMode) 
 	{
 		MechanumDrive(-x, -y, -rotation, 0.0);
-	} else 
+	} 
+	else if (eggEnabled)
 	{
-		ArcadeDrive(-x, -rotation, true);
+		 Drop();
+		 Wait(1.0);
+		 Raise();
+		 Wait(1.0);
+		 Drop();
+		 Wait(1.0);
+		 ArcadeDrive(0, .5, true);
+		 Wait(1.5);
+		 ArcadeDrive(0, 0, true);
+		 Wait(0.5);
+		 ArcadeDrive(0, -.5, true);
+		 Wait(1.5);
+		 Raise();
 	}
+	else ArcadeDrive(-x, -rotation, true);
 }
 
 void OctocanumDrive::SetOutputs(float leftOutput, float rightOutput)
@@ -199,4 +213,8 @@ float OctocanumDrive::Limit(float num)
 		return -1.0;
 	}
 	return num;
+}
+void OctocanumDrive::toggleEgg()
+{
+	eggEnabled = !eggEnabled;
 }

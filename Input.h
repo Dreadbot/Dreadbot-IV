@@ -19,6 +19,7 @@ class Input
 	Joystick* stick;
 	OctocanumDrive* drive;
 	
+	bool eggMode;
 	bool ifMecanum;
 	bool buttonOverride; //Is the user using the trigger or the bumper?
 public:
