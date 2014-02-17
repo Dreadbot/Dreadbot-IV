@@ -1,8 +1,9 @@
 #include "Input.h"
 
-Input::Input(Joystick* newStick, OctocanumDrive* newDrive, Shooter* newShooter)
+Input::Input(Joystick* newStick, OctocanumDrive* newDrive, Shooter* newShooter, Joystick* newStick2)
 {
 	stick = newStick;
+	p2Stick = newStick2;
 	drive = newDrive;
 	shooter = newShooter;
 	ifMecanum = true;

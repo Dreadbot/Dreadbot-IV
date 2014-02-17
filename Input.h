@@ -18,6 +18,7 @@ static const uint32_t ROTATE = 4;
 class Input 
 {
 	Joystick* stick;
+	Joystick* p2Stick;
 	OctocanumDrive* drive;
 	Shooter* shooter;
 	
@@ -25,7 +26,7 @@ class Input
 	bool ifMecanum;
 	bool buttonOverride; //Is the user using the trigger or the bumper?
 public:
-	Input(Joystick* newStick, OctocanumDrive* newDrive, Shooter* newShooter);
+	Input(Joystick* newStick, OctocanumDrive* newDrive, Shooter* newShooter, Joystick* newStick2);
 	void Update();
 };
 

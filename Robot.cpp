@@ -6,7 +6,8 @@
 
 class Robot : public IterativeRobot 
 {
-	Joystick* gamepad; 
+	Joystick* gamepad;
+	Joystick* shootPad;
 	OctocanumDrive* drivetrain;
 	Input* input;
 	Compressor* compress;
@@ -24,6 +25,7 @@ void Robot::RobotInit()
 {
 	SmartDashboard::init();
 	gamepad = new Joystick(1);
+	shootPad = new Joystick(2);
 	drivetrain = new OctocanumDrive();
 	input = new Input(gamepad, drivetrain);
 	compress = new Compressor(1, 8);
