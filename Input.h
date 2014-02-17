@@ -3,6 +3,7 @@
 
 #include "WPIlib.h"
 #include "OctocanumDrive.h"
+#include "Shooter.h"
 
 // Buttons
 //static const uint32_t MODE_TOGGLE = 1;
@@ -18,12 +19,13 @@ class Input
 {
 	Joystick* stick;
 	OctocanumDrive* drive;
+	Shooter* shooter;
 	
 	bool eggMode;
 	bool ifMecanum;
 	bool buttonOverride; //Is the user using the trigger or the bumper?
 public:
-	Input(Joystick* newStick, OctocanumDrive* newDrive);
+	Input(Joystick* newStick, OctocanumDrive* newDrive, Shooter* newShooter);
 	void Update();
 };
 

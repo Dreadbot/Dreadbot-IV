@@ -1,9 +1,10 @@
 #include "Input.h"
 
-Input::Input(Joystick* newStick, OctocanumDrive* newDrive)
+Input::Input(Joystick* newStick, OctocanumDrive* newDrive, Shooter* newShooter)
 {
 	stick = newStick;
 	drive = newDrive;
+	shooter = newShooter;
 	ifMecanum = true;
 	buttonOverride = false; //Start with toggle disable
 	eggMode = false;
@@ -26,20 +27,20 @@ void Input::Update()
 		r = 0;
 	
 	drive->Drive(x, y, r);
+	shooter->update();
 	
 	SmartDashboard::PutNumber("X-Axis", x);
 	SmartDashboard::PutNumber("Y-Axis", y);
 	SmartDashboard::PutNumber("Rotation", r);
 	SmartDashboard::PutBoolean("Mecanum mode: ", ifMecanum);
 	SmartDashboard::PutBoolean("buttonOverride: ", buttonOverride);
+	SmartDashboard::PutBoolean("shooter active: ", shooter->getActive());
 	
-	if (stick->GetRawButton(5))
-	{ //Toggle button override mode (left)
-		buttonOverride = !buttonOverride;
-	}
+	if (stick->GetRawButton(5)) buttonOverride = !buttonOverride;
 	if (stick->GetRawButton(9) && stick->GetRawButton(10)) drive->toggleEgg();
+	if (/*Button to shoot?*/ false) shooter->shoot();
 	
-	
+
 	if (!buttonOverride)
 	{ //Trigger mode
 		if (down < -0.5) drive->Raise();

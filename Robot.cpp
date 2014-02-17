@@ -10,11 +10,14 @@ class Robot : public IterativeRobot
 	OctocanumDrive* drivetrain;
 	Input* input;
 	Compressor* compress;
+	Shooter* shooter;
+
 	
 	bool autonDone; //Has auton executed?
 	Talon* winchMotor;
-	Encoder* winchEncoder;
-	Shooter* shoot;
+	DigitalInput* winchSwitch;
+	Solenoid* releaser;
+	Shooter* shooter;
 public:
 	
 void Robot::RobotInit() 
@@ -24,9 +27,10 @@ void Robot::RobotInit()
 	drivetrain = new OctocanumDrive();
 	input = new Input(gamepad, drivetrain);
 	compress = new Compressor(1, 8);
-	winchMotor = new Talon(9000);//Standin value
-	winchEncoder = new Encoder(2, 3);
-	shoot = new Shooter(winchMotor, winchEncoder);
+	winchMotor = new Talon(5);
+	winchSwitch = new DigitalInput(8);
+	releaser = new Solenoid(9000); //STANDIN VALUE! CHANGE BEFORE USE!
+	shooter = new Shooter(winchMotor, winchSwitch, releaser);
 }
 
 void Robot::DisabledInit()
