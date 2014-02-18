@@ -2,17 +2,25 @@
 
 OctocanumDrive::OctocanumDrive()
 {
-	maxOutput = 1.0;
-	for (uint8_t i = 0; i <= 3; i++) 
-	{
-		drive[i] = new OctocanumModule(i + 1, i + 1, i + 5);
-	}
-	valve = new Valve(1, 2);
+	maxOutput = 0.5;
+
+	drive[kFrontLeft] = new OctocanumModule(1, 2, 3, false);
+	drive[kFrontRight] = new OctocanumModule(2, 4, 5, true);
+	drive[kRearLeft] = new OctocanumModule(3, 6, 7, false);
+	drive[kRearRight] = new OctocanumModule(4, 8, 9, true);
+
+	valve0 = new Valve(1, 2);
+	valve1 = new Valve(3, 4);
 }
 
 void OctocanumDrive::Enable()
 {
 	enabled = true;
+	for (uint8_t i = 0; i <= 3; i++) 
+	{
+		drive[i]->encoder->Start();
+		drive[i]->speedController->Enable();
+	}
 	SmartDashboard::PutBoolean("ODrive.Enabled", true);
 	SmartDashboard::PutBoolean("ODrive.Traction", false);
 }
@@ -21,7 +29,8 @@ void OctocanumDrive::Disable()
 {
 	Raise();
 	for (uint8_t i = 0; i <= 3; i++) {
-		drive[i]->motor->Disable();
+		//drive[i]->motor->Disable();
+		drive[i]->speedController->Disable();
 	}
 	enabled = false;
 	SmartDashboard::PutBoolean("ODrive.Enabled", false);
@@ -30,55 +39,38 @@ void OctocanumDrive::Disable()
 void OctocanumDrive::Drop()
 {
 	if (tractionMode || !enabled) return;
-	phaseChange = true;
-	for (uint8_t i = 0; i <= 3; i++) {
-		//drive[i]->valve->Set(false);
-	}
-	valve->Set(false);
+	valve0->Set(false);
+	valve1->Set(false);
 	tractionMode = true;
-	phaseChange = false;
 	SmartDashboard::PutBoolean("ODrive.Traction", true);
 }
 
 void OctocanumDrive::Raise() 
 {
 	if (!tractionMode || !enabled) return;
-	phaseChange = true;
-	for (uint8_t i = 0; i <= 3; i++) {
-		//drive[i]->valve->Set(false);
-	}
-	valve->Set(true);
+	valve0->Set(true);
+	valve1->Set(true);
 	tractionMode = false;
-	phaseChange = false;
 	SmartDashboard::PutBoolean("ODrive.Traction", false);
 }
 
 
-void OctocanumDrive::MechanumDrive(float x, float y, float rotation, float gyroAngle = 0.0) 
+void OctocanumDrive::MechanumDrive(float x, float y, float rotation) 
 {
-	double xIn = x;
-	double yIn = -y;
-	if (gyroAngle != 0.0) 
-	{
-		RotateVector(xIn, yIn, gyroAngle);
-	}
-	double wheelSpeeds[] = {
-		xIn + yIn - rotation,  
-		-xIn + yIn - rotation,
-		-xIn + yIn + rotation,
-		xIn + yIn + rotation 
-	};
+	float xIn = -x;
+	float yIn = y;
+
+	wheelSpeeds[kFrontLeft] = xIn + yIn + rotation; 
+	wheelSpeeds[kFrontRight] = -xIn + yIn + rotation;
+	wheelSpeeds[kRearLeft] = -(-xIn + yIn - rotation);
+	wheelSpeeds[kRearRight] = -(xIn + yIn - rotation);
 	Normalize(wheelSpeeds);
 	
-	SmartDashboard::PutNumber("kFrontLeft", wheelSpeeds[kFrontLeft]);
-	SmartDashboard::PutNumber("kFrontRight", wheelSpeeds[kFrontRight]);
-	SmartDashboard::PutNumber("kRearLeft", wheelSpeeds[kRearLeft]);
-	SmartDashboard::PutNumber("kRearRight", wheelSpeeds[kRearRight]);
 
-	drive[kFrontLeft]->motor->Set(wheelSpeeds[kFrontLeft] * maxOutput);
-	drive[kFrontRight]->motor->Set(wheelSpeeds[kFrontRight] * maxOutput);
-	drive[kRearLeft]->motor->Set(-wheelSpeeds[kRearLeft] * maxOutput);
-	drive[kRearRight]->motor->Set(-wheelSpeeds[kRearRight] * maxOutput);
+	drive[kFrontLeft]->speedController->SetSetpoint(wheelSpeeds[kFrontLeft] * maxOutput); ////////////// replace motor with PID
+	drive[kFrontRight]->speedController->SetSetpoint(wheelSpeeds[kFrontRight] * maxOutput);
+	drive[kRearLeft]->speedController->SetSetpoint(-wheelSpeeds[kRearLeft] * maxOutput);
+	drive[kRearRight]->speedController->SetSetpoint(-wheelSpeeds[kRearRight] * maxOutput);
 }
 
 void OctocanumDrive::ArcadeDrive(float moveValue, float rotateValue, bool squaredInputs = false) 
@@ -87,8 +79,8 @@ void OctocanumDrive::ArcadeDrive(float moveValue, float rotateValue, bool square
 	float leftMotorOutput;
 	float rightMotorOutput;
 
-	moveValue = -Limit(moveValue);
-	rotateValue = -Limit(rotateValue);
+	moveValue = Limit(moveValue);
+	rotateValue = Limit(rotateValue);
 
 	if (squaredInputs) 
 	{
@@ -130,38 +122,35 @@ void OctocanumDrive::ArcadeDrive(float moveValue, float rotateValue, bool square
 }
 
 // This is probably the function you were looking for
-// Takes the desired x velocity, y velocity, and rotational speed
+// Takes the desired x velocity, y velocity, and rotational speed // angular velocity dammit
 void OctocanumDrive::Drive(float x, float y, float rotation) 
 {
-	if (tractionMode) 
-	{
-		MechanumDrive(-x, -y, -rotation, 0.0);
-	} 
-	else if (eggEnabled)
-	{
-		 Drop();
-		 Wait(1.0);
-		 Raise();
-		 Wait(1.0);
-		 Drop();
-		 Wait(1.0);
-		 ArcadeDrive(0, .5, true);
-		 Wait(1.5);
-		 ArcadeDrive(0, 0, true);
-		 Wait(0.5);
-		 ArcadeDrive(0, -.5, true);
-		 Wait(1.5);
-		 Raise();
+	if (tractionMode) MechanumDrive(x, y, rotation);
+	else ArcadeDrive(x, rotation, false);
+
+	SmartDashboard::PutNumber("SP_FrontLeft", wheelSpeeds[kFrontLeft]);
+	SmartDashboard::PutNumber("SP_FrontRight", wheelSpeeds[kFrontRight]);
+	SmartDashboard::PutNumber("SP_RearLeft", wheelSpeeds[kRearLeft]);
+	SmartDashboard::PutNumber("SP_RearRight", wheelSpeeds[kRearRight]);
+
+	SmartDashboard::PutNumber("MV_FrontLeft", drive[kFrontLeft]->encoder->PIDGet());
+	SmartDashboard::PutNumber("MV_FrontRight", drive[kFrontRight]->encoder->PIDGet());
+	SmartDashboard::PutNumber("MV_RearLeft", drive[kRearLeft]->encoder->PIDGet());
+	SmartDashboard::PutNumber("MV_RearRight", drive[kRearRight]->encoder->PIDGet());
+
+	maxOutput = SmartDashboard::GetNumber("Speed");
+
+	for (uint8_t i = 0; i <= 3; i++) {
+		drive[i]->speedController->SetPID(SmartDashboard::GetNumber("kP"), SmartDashboard::GetNumber("kI"), SmartDashboard::GetNumber("kD"));
 	}
-	else ArcadeDrive(-x, -rotation, true);
 }
 
 void OctocanumDrive::SetOutputs(float leftOutput, float rightOutput)
 {
-	drive[kFrontLeft]->motor->Set(-Limit(leftOutput) * maxOutput);
-	drive[kRearLeft]->motor->Set(-Limit(leftOutput) * maxOutput);
-	drive[kFrontRight]->motor->Set(Limit(rightOutput) * maxOutput);
-	drive[kRearRight]->motor->Set(Limit(rightOutput) * maxOutput);
+	drive[kFrontLeft]->speedController->SetSetpoint(-Limit(leftOutput) * maxOutput);
+	drive[kRearLeft]->speedController->SetSetpoint(-Limit(leftOutput) * maxOutput);
+	drive[kFrontRight]->speedController->SetSetpoint(Limit(rightOutput) * maxOutput);
+	drive[kRearRight]->speedController->SetSetpoint(Limit(rightOutput) * maxOutput);
 }
 
 bool OctocanumDrive::GetMode() 
@@ -213,8 +202,4 @@ float OctocanumDrive::Limit(float num)
 		return -1.0;
 	}
 	return num;
-}
-void OctocanumDrive::toggleEgg()
-{
-	eggEnabled = !eggEnabled;
 }

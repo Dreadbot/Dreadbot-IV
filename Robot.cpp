@@ -1,87 +1,115 @@
-//this will be the official main class
+//#define _SHOOTER
+
+
+
 
 #include "WPILib.h"
 #include "Input.h"
-#include "Shooter.h"
+
+#include "Vision.h"
+
 
 class Robot : public IterativeRobot 
 {
-	Joystick* gamepad;
-	Joystick* shootPad;
+	// Components
+	DriverStation* ds;
+	Joystick* gamepad; 
 	OctocanumDrive* drivetrain;
 	Input* input;
-	Compressor* compress;
-	Shooter* shooter;
+	Compressor* compressor;
+	Watchdog* watchdog;
+	Vision* vis;
 
-	
-	bool autonDone; //Has auton executed?
-	Talon* winchMotor;
-	DigitalInput* winchSwitch;
-	Solenoid* releaser;
-	Shooter* shooter;
+	// System variables
+	bool autonDone; //True when autonomous mode has executed
+	bool ballLoaded;
 public:
 	
 void Robot::RobotInit() 
 {
 	SmartDashboard::init();
+	ds = DriverStation::GetInstance();
 	gamepad = new Joystick(1);
-	shootPad = new Joystick(2);
-
 	drivetrain = new OctocanumDrive();
-	compress = new Compressor(1, 8);
-	winchMotor = new Talon(5);
-	winchSwitch = new DigitalInput(8);
-	releaser = new Solenoid(9000); //STANDIN VALUE! CHANGE BEFORE USE!
-	shooter = new Shooter(winchMotor, winchSwitch, releaser);
-	input = new Input(gamepad, drivetrain, shooter, shootPad);
+	input = new Input(gamepad, drivetrain);
+	compressor = new Compressor(1, 8);
+	watchdog = &GetWatchdog();
+	watchdog->SetEnabled(false);
+		
+	vis = new Vision();
 }
 
 void Robot::DisabledInit()
 {
-	compress->Stop();
-	shooter->shoot();
+	ds->InTest(false);
+	ds->InOperatorControl(false);
+	ds->InAutonomous(false);
+	ds->InDisabled(true);
+
+	compressor->Stop();
+	//shooter->release();
 }
 
 void Robot::DisabledPeriodic()
 {
 }
 
-
-
 void Robot::AutonomousInit()
 {
+	ds->InTest(false);
+	ds->InOperatorControl(false);
+	ds->InAutonomous(true);
+	ds->InDisabled(false);
+
 	autonDone = false;
+	drivetrain->Enable();
+	compressor->Start();
 }
 
 void Robot::AutonomousPeriodic()
 {
-	if (!autonDone)
-	{
-		shooter->shoot();
-		drivetrain->Drop();
-		Wait(1.0);
-		drivetrain->Drive(0, .2, 0);
-		Wait(2.0); //Drive forward for 2 seconds at .2 power
-		drivetrain->Drive(0, 0, 1);
-		Wait(1.0);
-		autonDone = true;
-	}
+	if (!autonDone) return;
+
+	drivetrain->Drop();
+	Wait(0.75);
+	drivetrain->Drive(0.0, 0.0, 0.2);
+	//while the hot goal isn't in the crosshairs
+		Wait(0.033);
+	//end
+	drivetrain->Drive(0.0, 0.2, 0.0);
+	Wait(1);
+	Wait(1);
+	drivetrain->Drive(0.0, 0.0, 0.0);
+	autonDone = true;
 }
+
+
 void Robot::TeleopInit()
 {
+	ds->InTest(false);
+	ds->InOperatorControl(true);
+	ds->InAutonomous(false);
+	ds->InDisabled(false);
+
 	drivetrain->Enable();
-	compress->Start();
+	compressor->Start();
 }
 
 void Robot::TeleopPeriodic() 
 {
 	input->Update();
+	watchdog->Feed();
+	vis->isHot();
 }
+
 
 void Robot::TestInit()
 {
+	ds->InTest(true);
+	ds->InOperatorControl(false);
+	ds->InAutonomous(false);
+	ds->InDisabled(false);
 }
-
 
 void Robot::TestPeriodic()
 {

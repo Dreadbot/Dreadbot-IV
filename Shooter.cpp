@@ -20,7 +20,7 @@ void Shooter::shoot()
 void Shooter::reset()
 {
 	if (active) return; //Shooter shouldn't reset if it is reset.
-	if (winchSwitch->Get()) winchAtMax;
+	if (winchSwitch->Get()) winchAtMax = true;
 	if (!winchAtMax) winchMotor->Set(1);
 	if (winchAtMax)
 	{
@@ -34,7 +34,7 @@ void Shooter::update()
 {
 	reset();
 }
-bool getActive()
+bool Shooter::getActive()
 {
 	return active;
 }

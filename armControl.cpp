@@ -26,7 +26,7 @@ void armControl::moveFlipper(float value)
 }
 void armControl::setShootmode(mode newMode)
 {
-	shooterMode = mode;
+	shooterMode = newMode;
 }
 void armControl::update()
 {
