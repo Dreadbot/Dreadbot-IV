@@ -26,19 +26,20 @@ void Robot::RobotInit()
 	SmartDashboard::init();
 	gamepad = new Joystick(1);
 	shootPad = new Joystick(2);
+
 	drivetrain = new OctocanumDrive();
-	input = new Input(gamepad, drivetrain);
 	compress = new Compressor(1, 8);
 	winchMotor = new Talon(5);
 	winchSwitch = new DigitalInput(8);
 	releaser = new Solenoid(9000); //STANDIN VALUE! CHANGE BEFORE USE!
 	shooter = new Shooter(winchMotor, winchSwitch, releaser);
+	input = new Input(gamepad, drivetrain, shooter, shootPad);
 }
 
 void Robot::DisabledInit()
 {
 	compress->Stop();
-	shoot->release();
+	shooter->shoot();
 }
 
 void Robot::DisabledPeriodic()
@@ -56,7 +57,7 @@ void Robot::AutonomousPeriodic()
 {
 	if (!autonDone)
 	{
-		shoot->release();
+		shooter->shoot();
 		drivetrain->Drop();
 		Wait(1.0);
 		drivetrain->Drive(0, .2, 0);
