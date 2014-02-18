@@ -1,39 +1,45 @@
 #include "armControl.h"
 
-armControl::armControl(Talon* newWheels, Talon* newFlipper, Solenoid* newArms)
+armControl::armControl(Talon* newWheels, Talon* newFlipper, DoubleSolenoid* newArms, Encoder* newPot)
 {
 	armWheels = newWheels;
 	flipper = newFlipper;
 	armPneu = newArms;
-	shootMode = false;
+	flipPot = newPot;
+	shooterMode = usrControl;
 }
-void armControl::moveArms(float value)
+void armControl::moveArms(DoubleSolenoid::Value value)
 {
-	if (shootMode) return; //Arms cannot be moved in shootMode
-	//armPneu->doSomething(value); 
-	//Incremental pneumatic control?
+	if (shooterMode != usrControl) return;
+	armPneu->Set(value);
 }
 void armControl::moveWheels(float value)
 {
-	if (shootMode) return; //Wheels cannot be moved in shootMode
+	if (shooterMode != usrControl) return; //Wheels cannot be moved in shootMode
 	armWheels->Set(value);
 }
 void armControl::moveFlipper(float value)
 {
-	if (shootMode) return; //Flipper cannot be moved in shootMode
+	if (shooterMode != usrControl) return; //Flipper cannot be moved in shootMode
 	//Possible flipper usage for aiming?
 	flipper->Set(value);
 }
-void armControl::setShootmode(bool mode)
+void armControl::setShootmode(mode newMode)
 {
-	shootMode = mode;
+	shooterMode = mode;
 }
 void armControl::update()
 {
-	if (!shootMode) return; //Update unecessary unless
-	//shootMode is active
-
-	moveArms(.3); //Move arms to maximum height
-	//moveFlipper() Flipper usage or no?
-	moveWheels(0); //Stop the wheels from moving
+	if (shooterMode == usrControl) return; //usrControl doesn't need updating
+	if (shooterMode == holding)
+	{
+		if (flipPot->Get() > FLAPPYUP + ERRVAL)
+		{
+			flipper->Set(abs(flipPot->Get() - FLAPPYUP) / ERRVAL);
+		}
+		else if (flipPot->Get() < FLAPPYUP - ERRVAL)
+		{
+			flipper->Set(abs(flipPot->Get() + FLAPPYUP) / ERRVAL);
+		}
+	}
 }
