@@ -30,37 +30,12 @@ void Input::Update()
 		r = 0.0;
 	
 	drive->Drive(x, y, r);
-	
+
 	if (dance) {
-		drive->valve0->Set(stick->GetRawButton(_DANCE_LEFT));
-		drive->valve1->Set(stick->GetRawButton(_DANCE_RIGHT));
+		drive->valve0->Set(stick->GetRawButton(_DANCE_RIGHT));
+		drive->valve1->Set(stick->GetRawButton(_DANCE_LEFT));
 	} else {
-		if (drop) drive->Drop();
+		if (!drop) drive->Drop();
 		else drive->Raise();
 	}
-
-
-
-	/*if (stick->GetRawButton(5))
-	{ //Toggle button override mode (left)
-		buttonOverride = !buttonOverride;
-	}
-
-	
-	
-	if (!buttonOverride)
-	{ //Trigger mode
-		if (down < -0.5) drive->Raise();
-		else drive->Drop();
-	}
-	else
-	{ //Button mode
-		if (stick->GetRawButton(6))
-		{ //Toggle mecanum mode
-			ifMecanum = !ifMecanum;
-		}
-		
-		if (ifMecanum) drive->Raise(); //Mecanum
-		else drive->Drop(); //Traction
-	}*/
 }
