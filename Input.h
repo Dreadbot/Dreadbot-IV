@@ -16,8 +16,8 @@
 	#define _BUTTON_RB 6
 	#define _BUTTON_LT 7
 	#define _BUTTON_RT 8
-	#define _BUTTON_START 9
-	#define _BUTTON_BACK 10
+	#define _BUTTON_START 10
+	#define _BUTTON_BACK 9
 	#define _BUTTON_LJOY 11
 	#define _BUTTON_RJOY 12
 	#define _AXIS_LJOY_X 1
@@ -34,10 +34,9 @@
 	#define _MEC_R _AXIS_RJOY_X
 	#define _ARC_Y _AXIS_LJOY_Y
 	#define _ARC_R _AXIS_RJOY_X
-	#define _DROP _BUTTON_RT 	// Activate the secondary drive mode
-	#define _SET _BUTTON_LT 	// Switch the default drive mode
+	#define _DROP _BUTTON_RT
 
-	#define _WINDUP 0
+	#define _WINDUP _BUTTON_X
 	#define _FLIPPER 0
 	#define _TRIGGER 0
 
@@ -53,12 +52,12 @@ class Input
 {
 	Joystick* stick;
 	OctocanumDrive* drive;
+	bool dance;
+	
 	
 public:
 	Input(Joystick* _stick, OctocanumDrive* _drive);
 	void Update();
-protected:
-	bool dance;
 };
 
 #endif
