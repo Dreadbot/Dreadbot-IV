@@ -5,20 +5,25 @@
 
 #include "WPILib.h"
 #include "Input.h"
-
-#include "Vision.h"
+#ifdef _SHOOTER
+	#include "Shooter.h"
+#endif
 
 
 class Robot : public IterativeRobot 
 {
 	// Components
 	DriverStation* ds;
-	Joystick* gamepad; 
+	Joystick* gamepad;
 	OctocanumDrive* drivetrain;
 	Input* input;
 	Compressor* compressor;
 	Watchdog* watchdog;
-	Vision* vis;
+	#ifdef _SHOOTER
+		Shooter* shooter;
+		Talon* winchMotor;
+		Encoder* winchEncoder;
+	#endif
 
 	// System variables
 	bool autonDone; //True when autonomous mode has executed
@@ -35,17 +40,15 @@ void Robot::RobotInit()
 	compressor = new Compressor(1, 8);
 	watchdog = &GetWatchdog();
 	watchdog->SetEnabled(false);
-		
-	vis = new Vision();
+	#ifdef _SHOOTER
+		winchMotor = new Talon(5); // relay
+		winchEncoder = new Encoder(2, 3);
+		shooter = new Shooter(winchMotor, winchEncoder);
+	#endif
 }
 
 void Robot::DisabledInit()
 {
-	ds->InTest(false);
-	ds->InOperatorControl(false);
-	ds->InAutonomous(false);
-	ds->InDisabled(true);
-
 	compressor->Stop();
 	//shooter->release();
 }
@@ -54,12 +57,10 @@ void Robot::DisabledPeriodic()
 {
 }
 
+
+
 void Robot::AutonomousInit()
 {
-	ds->InTest(false);
-	ds->InOperatorControl(false);
-	ds->InAutonomous(true);
-	ds->InDisabled(false);
 
 	autonDone = false;
 	drivetrain->Enable();
@@ -78,6 +79,9 @@ void Robot::AutonomousPeriodic()
 	//end
 	drivetrain->Drive(0.0, 0.2, 0.0);
 	Wait(1);
+	#ifdef _SHOOTER
+		shoot->release();
+	#endif
 	Wait(1);
 	drivetrain->Drive(0.0, 0.0, 0.0);
 	autonDone = true;
@@ -86,10 +90,6 @@ void Robot::AutonomousPeriodic()
 
 void Robot::TeleopInit()
 {
-	ds->InTest(false);
-	ds->InOperatorControl(true);
-	ds->InAutonomous(false);
-	ds->InDisabled(false);
 
 	drivetrain->Enable();
 	compressor->Start();
@@ -98,17 +98,12 @@ void Robot::TeleopInit()
 void Robot::TeleopPeriodic() 
 {
 	input->Update();
-	watchdog->Feed();
-	vis->isHot();
+//	watchdog->Feed();
 }
 
 
 void Robot::TestInit()
 {
-	ds->InTest(true);
-	ds->InOperatorControl(false);
-	ds->InAutonomous(false);
-	ds->InDisabled(false);
 }
 
 void Robot::TestPeriodic()
