@@ -20,7 +20,7 @@ void Input::Update()
 	float r = stick->GetRawAxis(MEC_R);
 
 	bool drop = stick->GetRawButton(DROP);
-	//bool dance = stick->GetRawButton(DANCE_ENABLE);
+	bool dance = stick->GetRawButton(DANCE_ENABLE);
 
 	SmartDashboard::PutNumber("X-Axis", x);
 	SmartDashboard::PutNumber("Y-Axis", y);
@@ -39,8 +39,8 @@ void Input::Update()
 
 	if (dance)
 	{
-		/*drive->valve0->Set(stick->GetRawButton(DANCE_RIGHT));
-		drive->valve1->Set(stick->GetRawButton(DANCE_LEFT));*/
+		drive->valve0->Set(stick->GetRawButton(DANCE_RIGHT));
+		drive->valve1->Set(stick->GetRawButton(DANCE_LEFT));
 	}
 	else
 	{

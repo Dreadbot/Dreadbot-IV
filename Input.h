@@ -39,14 +39,13 @@
 	#define DROP BUTTON_RT
 
 	#define FLIPPER AXIS_LJOY_Y //Shooter controls
-	#define TRIGGER BUTTON_LB
+	#define TRIGGER BUTTON_B
 	#define ARMS AXIS_DPAD_Y
 	#define ARM_MECS AXIS_RJOY_Y
 
-	//#define DANCE_LEFT BUTTON_LB //Dancing controls
-	//#define DANCE_RIGHT BUTTON_RB
-	//#define DANCE_ENABLE BUTTON_A //Dancing has least priority, and its controls
-	//are unimportant and need remapping
+	#define DANCE_LEFT BUTTON_LB //Dancing controls
+	#define DANCE_RIGHT BUTTON_RB
+	#define DANCE_ENABLE BUTTON_A
 #endif
 
 class Input 
