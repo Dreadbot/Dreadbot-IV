@@ -43,3 +43,7 @@ void armControl::update()
 		}
 	}
 }
+int armControl::getFlipPot()
+{
+	return flipPot->Get();
+}

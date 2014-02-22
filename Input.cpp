@@ -22,11 +22,8 @@ void Input::Update()
 	bool drop = stick->GetRawButton(DROP);
 	bool dance = stick->GetRawButton(DANCE_ENABLE);
 
-	SmartDashboard::PutNumber("X-Axis", x);
-	SmartDashboard::PutNumber("Y-Axis", y);
-	SmartDashboard::PutNumber("Rotation", r);
-	SmartDashboard::PutBoolean("Drop", drop);
-	SmartDashboard::PutBoolean("Dance", dance);
+	SmartDashboard::PutBoolean("Traction Mode: ", drop); 
+	SmartDashboard::PutNumber("Flipper Value: ", arms->getFlipPot());
 
 	if (x < 0.1 && x > -0.1)
 		x = 0.0;

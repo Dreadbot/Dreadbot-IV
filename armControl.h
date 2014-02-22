@@ -14,6 +14,7 @@ public:
 	void moveFlipper(float value);
 	void setShootmode(mode newMode);
 	void update();
+	int getFlipPot();
 private:
 	Talon* armWheels;
 	Talon* flipper;

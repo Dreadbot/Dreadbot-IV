@@ -39,13 +39,13 @@
 	#define DROP BUTTON_RT
 
 	#define FLIPPER AXIS_LJOY_Y //Shooter controls
-	#define TRIGGER BUTTON_B
+	#define TRIGGER BUTTON_A
 	#define ARMS AXIS_DPAD_Y
 	#define ARM_MECS AXIS_RJOY_Y
 
 	#define DANCE_LEFT BUTTON_LB //Dancing controls
 	#define DANCE_RIGHT BUTTON_RB
-	#define DANCE_ENABLE BUTTON_A
+	#define DANCE_ENABLE BUTTON_Y
 #endif
 
 class Input 
