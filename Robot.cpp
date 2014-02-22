@@ -1,33 +1,33 @@
-//#define _SHOOTER
-
-
-
-
 #include "WPILib.h"
 #include "Input.h"
-#ifdef _SHOOTER
-	#include "Shooter.h"
-#endif
-
 
 class Robot : public IterativeRobot 
 {
 	// Components
 	DriverStation* ds;
 	Joystick* gamepad;
+	Joystick* shootPad;
 	OctocanumDrive* drivetrain;
 	Input* input;
+
 	Compressor* compressor;
 	Watchdog* watchdog;
-	#ifdef _SHOOTER
-		Shooter* shooter;
-		Talon* winchMotor;
-		Encoder* winchEncoder;
-	#endif
+
+	Encoder* flipPot;
+	DigitalInput* shooterSwitch;
+	Shooter* shooter;
+	Talon* winchMotor;
+	Encoder* winchEncoder;
+	Talon* rollerMotor;
+	Talon* flipperMotor;
+	DoubleSolenoid* armPneus;
+	Solenoid* shooterReleaser;
+	armControl* arms;
 
 	// System variables
 	bool autonDone; //True when autonomous mode has executed
 	bool ballLoaded;
+
 public:
 	
 void Robot::RobotInit() 
@@ -35,16 +35,29 @@ void Robot::RobotInit()
 	SmartDashboard::init();
 	ds = DriverStation::GetInstance();
 	gamepad = new Joystick(1);
+	shootPad = new Joystick(2);
 	drivetrain = new OctocanumDrive();
-	input = new Input(gamepad, drivetrain);
 	compressor = new Compressor(1, 8);
+
 	watchdog = &GetWatchdog();
 	watchdog->SetEnabled(false);
-	#ifdef _SHOOTER
-		winchMotor = new Talon(5); // relay
-		winchEncoder = new Encoder(2, 3);
-		shooter = new Shooter(winchMotor, winchEncoder);
-	#endif
+
+	flipPot = new Encoder(2);
+	armPneus = new DoubleSolenoid(5, 6);
+	flipperMotor = new Talon(6);
+	shooterSwitch = new DigitalInput(8);
+	shooterReleaser = new Solenoid(7);
+	winchMotor = new Talon(5); // relay
+	winchEncoder = new Encoder(2, 3);
+	rollerMotor = new Talon(7);
+
+	shooter = new Shooter(winchMotor, shooterSwitch, shooterReleaser);
+	arms = new armControl(rollerMotor, flipperMotor, armPneus, flipPot);
+	input = new Input(gamepad,
+		shootPad,
+		drivetrain,
+		arms,
+		shooter);
 }
 
 void Robot::DisabledInit()
