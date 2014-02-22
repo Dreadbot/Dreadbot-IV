@@ -25,12 +25,9 @@ void Input::Update()
 	SmartDashboard::PutBoolean("Traction Mode: ", drop); 
 	SmartDashboard::PutNumber("Flipper Value: ", arms->getFlipPot());
 
-	if (x < 0.1 && x > -0.1)
-		x = 0.0;
-	if (y < 0.1 && y > -0.1)
-		y = 0.0;
-	if (r < 0.1 && r > -0.1)
-		r = 0.0;
+	if (x < 0.1 && x > -0.1) x = 0.0;
+	if (y < 0.1 && y > -0.1) y = 0.0;
+	if (r < 0.1 && r > -0.1) r = 0.0;
 	
 	drive->Drive(x, y, r);
 
@@ -63,4 +60,5 @@ void Input::Update()
 	if (armAxis > 0) arms->moveArms(DoubleSolenoid::Value.kForward);
 	if (armAxis < 0) arms->moveArms(DoubleSolenoid::Value.kReverse);
 	if (armAxis == 0) arms->moveArms(DoubleSolenoid::Value.kOff);
+	if (p2Stick->GetRawButton(SHOOTER_RESET)) shooter->setReset();
 }

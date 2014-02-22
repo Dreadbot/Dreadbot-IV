@@ -42,6 +42,7 @@
 	#define TRIGGER BUTTON_A
 	#define ARMS AXIS_DPAD_Y
 	#define ARM_MECS AXIS_RJOY_Y
+	#define SHOOTER_RESET BUTTON_LB
 
 	#define DANCE_LEFT BUTTON_LB //Dancing controls
 	#define DANCE_RIGHT BUTTON_RB

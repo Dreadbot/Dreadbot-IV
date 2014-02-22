@@ -4,6 +4,7 @@ Shooter::Shooter(Talon* newMotor, DigitalInput* newSwitch, Solenoid* newSolenoid
 {
 	active = false;
 	winchAtMax = false;
+	resetEnabled = false;
 	winchMotor = newMotor;
 	winchSwitch = newSwitch;
 	releaser = newSolenoid;
@@ -19,6 +20,7 @@ void Shooter::shoot()
 }
 void Shooter::reset()
 {
+	if (!resetEnabled) return; //Don't reset if resetting isn't allowed
 	if (active) return; //Shooter shouldn't reset if it is reset.
 	if (winchSwitch->Get()) winchAtMax = true;
 	if (!winchAtMax) winchMotor->Set(1);
@@ -32,9 +34,14 @@ void Shooter::reset()
 }
 void Shooter::update()
 {
-	reset();
+	if (resetEnabled) reset();
+	if (active) resetEnabled = false;
 }
 bool Shooter::getActive()
 {
 	return active;
+}
+void Shooter::setReset()
+{
+	resetEnabled = true;
 }
