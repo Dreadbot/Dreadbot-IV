@@ -2,9 +2,7 @@
 #ifndef _VALVE_H_
 #define _VALVE_H_
 
-#include "WPILib.h"m,.
-
-
+#include "WPILib.h"
 class Valve
 {
 	Solenoid *s0;

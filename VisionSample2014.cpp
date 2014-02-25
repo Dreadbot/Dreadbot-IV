@@ -335,6 +335,6 @@ public:
 	}
 	
 };
+//START_ROBOT_CLASS(VisionSample2014);
 
-START_ROBOT_CLASS(VisionSample2014);
 

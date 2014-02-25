@@ -42,7 +42,7 @@ void Robot::RobotInit()
 	watchdog = &GetWatchdog();
 	watchdog->SetEnabled(false);
 
-	flipPot = new Encoder(2);
+	flipPot = new Encoder(10, 11);
 	armPneus = new DoubleSolenoid(5, 6);
 	flipperMotor = new Talon(6);
 	shooterSwitch = new DigitalInput(8);

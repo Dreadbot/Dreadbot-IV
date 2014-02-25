@@ -54,9 +54,9 @@ void Input::Update()
 
 	//Set controls
 	arms->moveFlipper(flipAxis);
-	if (armAxis > .5) arms->moveArms(DoubleSolenoid::Value.kForward);
-	if (armAxis < -.5) arms->moveArms(DoubleSolenoid::Value.kReverse);
-	if (armAxis < -.5 && armAxis > .5) arms->moveArms(DoubleSolenoid::Value.kOff);
+	if (armAxis > 0.5) arms->moveArms(DoubleSolenoid::kForward);
+	if (armAxis < -0.5) arms->moveArms(DoubleSolenoid::kReverse);
+	if (armAxis < -0.5 && armAxis > 0.5) arms->moveArms(DoubleSolenoid::kOff);
 	if (p2Stick->GetRawButton(SHOOTER_RESET)) shooter->setReset();
 	if (p2Stick->GetRawButton(ARM_MECS_IN)) arms->moveWheels(1);
 	else if (p2Stick->GetRawAxis(ARM_MECS_OUT)) arms->moveWheels(-1);
