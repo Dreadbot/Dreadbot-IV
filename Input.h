@@ -38,11 +38,12 @@
 	#define ARC_R AXIS_RJOY_X 
 	#define DROP BUTTON_RT
 
-	#define FLIPPER AXIS_LJOY_Y //Shooter controls
+	#define FLIPPER AXIS_RJOY_Y //Shooter controls
 	#define TRIGGER BUTTON_A
-	#define ARMS AXIS_DPAD_Y
-	#define ARM_MECS AXIS_RJOY_Y
-	#define SHOOTER_RESET BUTTON_LB
+	#define ARMS AXIS_LJOY_Y
+	#define ARM_MECS_IN BUTTON_LT
+	#define ARM_MECS_OUT BUTTON_RT
+	#define SHOOTER_RESET BUTTON_B
 
 	#define DANCE_LEFT BUTTON_LB //Dancing controls
 	#define DANCE_RIGHT BUTTON_RB

@@ -47,18 +47,19 @@ void Input::Update()
 	//Player 2 Controls
 	float flipAxis = p2Stick->GetRawAxis(FLIPPER);
 	float armAxis = p2Stick->GetRawAxis(ARMS);
-	float armWheels = p2Stick->GetRawAxis(ARM_MECS);
 	
 	//Deadzone
 	if (flipAxis <= 0.1 && flipAxis >= -0.1) flipAxis = 0;
 	if (armAxis <= 0.1 && flipAxis >= -0.1) armAxis = 0;
-	if (armWheels <= 0.1 && flipAxis >= -0.1) armWheels = 0;
 
 	//Set controls
 	arms->moveFlipper(flipAxis);
-	arms->moveWheels(armWheels);
-	if (armAxis > 0) arms->moveArms(DoubleSolenoid::Value.kForward);
-	if (armAxis < 0) arms->moveArms(DoubleSolenoid::Value.kReverse);
-	if (armAxis == 0) arms->moveArms(DoubleSolenoid::Value.kOff);
+	if (armAxis > .5) arms->moveArms(DoubleSolenoid::Value.kForward);
+	if (armAxis < -.5) arms->moveArms(DoubleSolenoid::Value.kReverse);
+	if (armAxis < -.5 && armAxis > .5) arms->moveArms(DoubleSolenoid::Value.kOff);
 	if (p2Stick->GetRawButton(SHOOTER_RESET)) shooter->setReset();
+	if (p2Stick->GetRawButton(ARM_MECS_IN)) arms->moveWheels(1);
+	else if (p2Stick->GetRawAxis(ARM_MECS_OUT)) arms->moveWheels(-1);
+	else arms->moveWheels(0);
+
 }
