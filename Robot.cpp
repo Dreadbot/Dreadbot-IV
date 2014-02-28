@@ -1,18 +1,26 @@
+// Finished merge (Parker)
+
 #include "WPILib.h"
+#include "Robot.h"
 #include "Input.h"
+
 
 class Robot : public IterativeRobot 
 {
-	// Components
+// Interface
 	DriverStation* ds;
-	Joystick* gamepad;
+	Joystick* gamePad;
 	Joystick* shootPad;
+
+// System
+	Watchdog* watchdog;
+	Compressor* compressor;
+	
+// Drivetrain
 	OctocanumDrive* drivetrain;
 	Input* input;
-
-	Compressor* compressor;
-	Watchdog* watchdog;
-
+	
+// Shooter
 	Encoder* flipPot;
 	DigitalInput* shooterSwitch;
 	Shooter* shooter;
@@ -22,26 +30,29 @@ class Robot : public IterativeRobot
 	Talon* flipperMotor;
 	DoubleSolenoid* armPneus;
 	Solenoid* shooterReleaser;
-	armControl* arms;
+	ArmControl* arms;
 
-	// System variables
-	bool autonDone; //True when autonomous mode has executed
-	bool ballLoaded;
+// System state
+	bool autonDone;		// True when autonomous mode has finished executing
 
 public:
 	
 void Robot::RobotInit() 
 {
+// DS
 	SmartDashboard::init();
 	ds = DriverStation::GetInstance();
-	gamepad = new Joystick(1);
-	shootPad = new Joystick(2);
+
+// Watchdog
+	watchdog = &GetWatchdog();
+	Watchdog->SetExpiration(0.5);
+	watchdog->SetEnabled(false);
+
+// Drivetrain
 	drivetrain = new OctocanumDrive();
 	compressor = new Compressor(1, 8);
 
-	watchdog = &GetWatchdog();
-	watchdog->SetEnabled(false);
-
+// Shooter
 	flipPot = new Encoder(10, 11);
 	armPneus = new DoubleSolenoid(5, 6);
 	flipperMotor = new Talon(6);
@@ -50,20 +61,25 @@ void Robot::RobotInit()
 	winchMotor = new Talon(5); // relay
 	winchEncoder = new Encoder(2, 3);
 	rollerMotor = new Talon(7);
-
+	arms = new ArmControl(rollerMotor, flipperMotor, armPneus, flipPot);
 	shooter = new Shooter(winchMotor, shooterSwitch, shooterReleaser);
-	arms = new armControl(rollerMotor, flipperMotor, armPneus, flipPot);
-	input = new Input(gamepad,
+
+// Driver interfaces
+	gamePad = new Joystick(1);
+	shootPad = new Joystick(2);
+	input = new Input(gamePad,
 		shootPad,
 		drivetrain,
 		arms,
-		shooter);
+		shooter
+	);
+
+	this->SetPeriod(0.0);
 }
 
 void Robot::DisabledInit()
 {
 	compressor->Stop();
-	//shooter->release();
 }
 
 void Robot::DisabledPeriodic()
@@ -71,52 +87,41 @@ void Robot::DisabledPeriodic()
 }
 
 
-
 void Robot::AutonomousInit()
 {
-
 	autonDone = false;
+	watchdog->SetEnabled(false);
 	drivetrain->Enable();
 	compressor->Start();
 }
 
 void Robot::AutonomousPeriodic()
 {
-	if (!autonDone) return;
 
-	drivetrain->Drop();
-	Wait(0.75);
-	drivetrain->Drive(0.0, 0.0, 0.2);
-	//while the hot goal isn't in the crosshairs
-		Wait(0.033);
-	//end
-	drivetrain->Drive(0.0, 0.2, 0.0);
-	Wait(1);
-	#ifdef _SHOOTER
-		shoot->release();
-	#endif
-	Wait(1);
-	drivetrain->Drive(0.0, 0.0, 0.0);
-	autonDone = true;
 }
 
 
 void Robot::TeleopInit()
 {
-
+	watchdog->SetEnabled(true);
+	
 	drivetrain->Enable();
 	compressor->Start();
 }
 
 void Robot::TeleopPeriodic() 
 {
+	watchdog->Feed();
 	input->Update();
-//	watchdog->Feed();
+
 }
 
 
 void Robot::TestInit()
 {
+	SmartDashboard::PutString("C++ Version", "__cplusplus");
+	SmartDashboard::PutString("Compile date", "__DATE__");
+	SmartDashboard::PutString("Compile time", "__TIME__");
 }
 
 void Robot::TestPeriodic()

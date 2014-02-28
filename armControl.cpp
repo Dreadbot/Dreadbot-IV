@@ -1,25 +1,29 @@
 #include "armControl.h"
 
-armControl::armControl(Talon* newWheels, Talon* newFlipper, DoubleSolenoid* newArms, Encoder* newPot)
+ArmControl::ArmControl(Talon* _wheels, Talon* _flipper, DoubleSolenoid* _arms, Encoder* _pot)
 {
-	armWheels = newWheels;
-	flipper = newFlipper;
-	armPneu = newArms;
-	flipPot = newPot;
+	armWheels = _wheels;
+	flipper = _flipper;
+	armPneu = _arms;
+	flipPot = _pot;
 }
-void armControl::moveArms(DoubleSolenoid::Value value)
+
+void ArmControl::MoveArms(DoubleSolenoid::Value value)
 {
 	armPneu->Set(value);
 }
-void armControl::moveWheels(float value)
+
+void ArmControl::MoveWheels(float value)
 {
 	armWheels->Set(value);
 }
-void armControl::moveFlipper(float value)
+
+void ArmControl::MoveFlipper(float value)
 {
 	flipper->Set(value);
 }
-int armControl::getFlipPot()
+
+int ArmControl::GetFlipPot()
 {
 	return flipPot->Get();
 }

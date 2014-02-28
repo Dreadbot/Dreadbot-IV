@@ -2,38 +2,47 @@
 
 OctocanumDrive::OctocanumDrive()
 {
-	maxOutput = 0.5;
+	maxOutput = 1.0;
 
-	drive[kFrontLeft] = new OctocanumModule(1, 2, 3, true);
+	drive[kFrontLeft] = new OctocanumModule(1, 2, 3, false);
 	drive[kFrontRight] = new OctocanumModule(2, 4, 5, false);
 	drive[kRearLeft] = new OctocanumModule(3, 6, 7, true);
 	drive[kRearRight] = new OctocanumModule(4, 8, 9, false);
 
-	valve0 = new Valve(1, 2);
-	valve1 = new Valve(3, 4);
+	#ifndef _TESTBED
+		valve0 = new Valve(1, 2);
+		valve1 = new Valve(3, 4);
+		valve0->Set(true);
+		valve1->Set(true);
+	#endif
 }
 
 void OctocanumDrive::Enable()
 {
 	enabled = true;
-	
-	for (uint8_t i = 0; i < 4; i++) 
-	{
-		drive[i]->encoder->Reset();
-		drive[i]->encoder->Start();
-		drive[i]->speedController->Enable();
-	}
-	      
-	SmartDashboard::PutBoolean("ODrive.Enabled", true);
-	SmartDashboard::PutBoolean("ODrive.Traction", false);
+	#ifndef _TESTBED
+		for (uint8_t i = 0; i < 3; i++) 
+		{
+			drive[i]->encoder->Start();
+			//drive[i]->cloop->Enable();
+		}
+	#else
+		drive[0]->encoder->Start();
+		//drive[0]->cloop->Enable();
+	#endif
 }
 
 void OctocanumDrive::Disable()
 {
 	Raise();
-	for (uint8_t i = 0; i < 4; i++) {
-		drive[i]->speedController->Disable();
-	}
+	#ifndef _TESTBED
+		for (uint8_t i = 0; i <= 3; i++) 
+		{
+			drive[i]->cloop->Disable();
+		}
+	#else
+		drive[0]->cloop->Disable();
+	#endif
 	enabled = false;
 	SmartDashboard::PutBoolean("ODrive.Enabled", false);
 }
@@ -41,8 +50,10 @@ void OctocanumDrive::Disable()
 void OctocanumDrive::Drop()
 {
 	if (tractionMode || !enabled) return;
-	valve0->Set(false);
-	valve1->Set(false);
+	#ifndef _TESTBED
+		valve0->Set(false);
+		valve1->Set(false);
+	#endif
 	tractionMode = true;
 	SmartDashboard::PutBoolean("ODrive.Traction", true);
 }
@@ -50,14 +61,16 @@ void OctocanumDrive::Drop()
 void OctocanumDrive::Raise() 
 {
 	if (!tractionMode || !enabled) return;
-	valve0->Set(true);
-	valve1->Set(true);
+	#ifndef _TESTBED
+		valve0->Set(true);
+		valve1->Set(true);
+	#endif
 	tractionMode = false;
 	SmartDashboard::PutBoolean("ODrive.Traction", false);
 }
 
 
-void OctocanumDrive::MechanumDrive(float x, float y, float rotation) 
+void OctocanumDrive::MechanumDrive(float x, float y, float rotation)
 {
 	float xIn = -x;
 	float yIn = y;
@@ -118,39 +131,34 @@ void OctocanumDrive::ArcadeDrive(float moveValue, float rotateValue, bool square
 // Drive to <x, y> while rotating
 void OctocanumDrive::Drive(float x, float y, float rotation) 
 {
+	if (!enabled) return;
+
 	if (tractionMode) MechanumDrive(x, y, rotation);
-	else ArcadeDrive(x, rotation, false);
+	else ArcadeDrive(x, rotation, true);
 
-	SmartDashboard::PutNumber("SP_FrontLeft", wheelSpeeds[kFrontLeft]);
-	SmartDashboard::PutNumber("SP_FrontRight", wheelSpeeds[kFrontRight]);
-	SmartDashboard::PutNumber("SP_RearLeft", wheelSpeeds[kRearLeft]);
-	SmartDashboard::PutNumber("SP_RearRight", wheelSpeeds[kRearRight]);
 
-	SmartDashboard::PutNumber("MV_FrontLeft", drive[kFrontLeft]->encoder->PIDGet());
-	SmartDashboard::PutNumber("MV_FrontRight", drive[kFrontRight]->encoder->PIDGet());
-	SmartDashboard::PutNumber("MV_RearLeft", drive[kRearLeft]->encoder->PIDGet());
-	SmartDashboard::PutNumber("MV_RearRight", -drive[kRearRight]->encoder->PIDGet());
+	SmartDashboard::PutNumber("FL.PIDIN", wheelSpeeds[kFrontLeft] * maxOutput); // setpoint
+	SmartDashboard::PutNumber("FL.MEASURED", drive[kFrontLeft]->encoder->GetRate()); // process variable
+	SmartDashboard::PutNumber("FL.PIDOUT", drive[kFrontLeft]->cloop->Get()); // manipulated variable
 
-	maxOutput = SmartDashboard::GetNumber("Speed");
+	SmartDashboard::PutBoolean("ODrive.IsEnabled", enabled);
+	SmartDashboard::PutBoolean("ODrive.TractionMode", tractionMode);
+	SmartDashboard::PutBoolean("ODrive.IsDancing", dance);
+	
+	maxOutput = DriverStation::GetInstance()->GetAnalogIn(1);
 
-	#ifdef _PIDTUNE
-		for (uint8_t i = 0; i < 4; i++) {
-			drive[i]->speedController->SetPID(SmartDashboard::GetNumber("kP"), SmartDashboard::GetNumber("kI"), SmartDashboard::GetNumber("kD"));
-		}
+	Normalize();
+	drive[kFrontLeft]->cloop->SetSetpoint(-wheelSpeeds[kFrontLeft] * maxOutput);
+
+	#ifndef _TESTBED
+		drive[kRearLeft]->cloop->SetSetpoint(-wheelSpeeds[kRearLeft] * maxOutput);
+		drive[kFrontRight]->cloop->SetSetpoint(wheelSpeeds[kFrontRight] * maxOutput);
+		drive[kRearRight]->cloop->SetSetpoint(wheelSpeeds[kRearRight] * maxOutput);
 	#endif
 	
-	Set();
 }
 
-void OctocanumDrive::Set() {
-	Normalize();
-	drive[kFrontLeft]->speedController->SetSetpoint(-wheelSpeeds[kFrontLeft] * maxOutput);
-	drive[kRearLeft]->speedController->SetSetpoint(-wheelSpeeds[kRearLeft] * maxOutput);
-	drive[kFrontRight]->speedController->SetSetpoint(wheelSpeeds[kFrontRight] * maxOutput);
-	drive[kRearRight]->speedController->SetSetpoint(wheelSpeeds[kRearRight] * maxOutput);
-}
-
-bool OctocanumDrive::GetMode() 
+bool OctocanumDrive::GetDriveMode() 
 {
 	return tractionMode;
 }
@@ -175,17 +183,6 @@ void OctocanumDrive::Normalize()
 			wheelSpeeds[i] = wheelSpeeds[i] / maxMagnitude;
 		}
 	}
-}
-
-void OctocanumDrive::RotateVector(double &x, double &y, double angle)
-{
-	angle *= 0.01745329251;
-	double cosA = cos(angle);
-	double sinA = sin(angle);
-	double xOut = x * cosA - y * sinA;
-	double yOut = x * sinA + y * cosA;
-	x = xOut;
-	y = yOut;
 }
 
 float OctocanumDrive::Limit(float num) 

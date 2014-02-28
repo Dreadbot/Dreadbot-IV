@@ -1,14 +1,17 @@
 #include <WPILib.h>
 
 
-class armControl
+class ArmControl
 {
 public:
-	armControl(Talon* newWheels, Talon* newFlipper, DoubleSolenoid* newArms, Encoder* newPot);
-	void moveArms(DoubleSolenoid::Value value);
-	void moveWheels(float value);
-	void moveFlipper(float value);
-	int getFlipPot();
+	ArmControl(Talon* _wheels, Talon* _flipper, DoubleSolenoid* _arms, Encoder* _pot);
+
+	void MoveArms(DoubleSolenoid::Value value);
+	void MoveWheels(float value);
+	void MoveFlipper(float value);
+
+	int GetFlipPot();
+
 private:
 	Talon* armWheels;
 	Talon* flipper;
