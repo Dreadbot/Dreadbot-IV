@@ -1,29 +1,30 @@
 #include "Input.h"
 
-Input::Input(Joystick* newStick, 
-	Joystick* newP2Stick,
-	OctocanumDrive* newDrive,
-	armControl* newArms,
-	Shooter* newShooter)
+Input::Input(Joystick* _drivestick, 
+	Joystick* _shootStick,
+	OctocanumDrive* _drive,
+	armControl* _arms,
+	Shooter* _shooter)
 {
-	stick = newStick;
-	p2Stick = newP2Stick;
-	drive = newDrive;
-	arms = newArms;
-	shooter = newShooter;
-	dance = false;
+	driveStick = _drivestick;
+	shootStick = _shootStick;
+	drive = _drive;
+	arms = _arms;
+	shooter = _shooter;
 }
+
+
 void Input::Update()
 {
-	float x = stick->GetRawAxis(MEC_X);
-	float y = stick->GetRawAxis(MEC_Y);
-	float r = stick->GetRawAxis(MEC_R);
+	float x = driveStick->GetRawAxis(MEC_X);
+	float y = driveStick->GetRawAxis(MEC_Y);
+	float r = driveStick->GetRawAxis(MEC_R);
 
-	bool drop = stick->GetRawButton(DROP);
-	bool dance = stick->GetRawButton(DANCE_ENABLE);
+	bool drop = driveStick->GetRawButton(DROP);
+	bool dance = driveStick->GetRawButton(DANCE_ENABLE);
 
 	SmartDashboard::PutBoolean("Traction Mode: ", drop); 
-	SmartDashboard::PutNumber("Flipper Value: ", arms->getFlipPot());
+	SmartDashboard::PutNumber("Flipper Value: ", arms->getFlipPot()); //TEST
 
 	if (x < 0.1 && x > -0.1) x = 0.0;
 	if (y < 0.1 && y > -0.1) y = 0.0;
@@ -33,8 +34,8 @@ void Input::Update()
 
 	if (dance)
 	{
-		drive->valve0->Set(stick->GetRawButton(DANCE_RIGHT));
-		drive->valve1->Set(stick->GetRawButton(DANCE_LEFT));
+		drive->valve0->Set(driveStick->GetRawButton(DANCE_RIGHT));
+		drive->valve1->Set(driveStick->GetRawButton(DANCE_LEFT));
 	}
 	else
 	{
@@ -42,24 +43,31 @@ void Input::Update()
 		else drive->Raise();
 	}
 	shooter->update();
-	if (stick->GetRawButton(TRIGGER)) shooter->shoot();
+	if (driveStick->GetRawButton(TRIGGER)) shooter->shoot();
 
-	//Player 2 Controls
-	float flipAxis = p2Stick->GetRawAxis(FLIPPER);
-	float armAxis = p2Stick->GetRawAxis(ARMS);
+	// Shooter Controls
+	float flipAxis = shootStick->GetRawAxis(FLIPPER);
+	float armAxis = shootStick->GetRawAxis(ARMS);
 	
-	//Deadzone
-	if (flipAxis <= 0.1 && flipAxis >= -0.1) flipAxis = 0;
-	if (armAxis <= 0.1 && flipAxis >= -0.1) armAxis = 0;
+	// Dead zone
+	if (flipAxis <= 0.1 && flipAxis >= -0.1) flipAxis = 0.0;
+	if (armAxis <= 0.1 && flipAxis >= -0.1) armAxis = 0.0;
 
-	//Set controls
+	// Set controls
 	arms->moveFlipper(flipAxis);
-	if (armAxis > 0.5) arms->moveArms(DoubleSolenoid::kForward);
-	if (armAxis < -0.5) arms->moveArms(DoubleSolenoid::kReverse);
-	if (armAxis < -0.5 && armAxis > 0.5) arms->moveArms(DoubleSolenoid::kOff);
-	if (p2Stick->GetRawButton(SHOOTER_RESET)) shooter->setReset();
-	if (p2Stick->GetRawButton(ARM_MECS_IN)) arms->moveWheels(1);
-	else if (p2Stick->GetRawAxis(ARM_MECS_OUT)) arms->moveWheels(-1);
-	else arms->moveWheels(0);
+	if (armAxis > 0.5) 
+		arms->moveArms(DoubleSolenoid::kForward);
+	if (armAxis < -0.5) 
+		arms->moveArms(DoubleSolenoid::kReverse);
+	if (armAxis < -0.5 && armAxis > 0.5) 
+		arms->moveArms(DoubleSolenoid::kOff);
+	if (shootStick->GetRawButton(SHOOTER_RESET)) 
+		shooter->setReset();
+	if (shootStick->GetRawButton(ARM_MECS_IN)) 
+		arms->moveWheels(1);
+	else if (shootStick->GetRawAxis(ARM_MECS_OUT)) 
+		arms->moveWheels(-1);
+	else 
+		arms->moveWheels(0);
 
 }
