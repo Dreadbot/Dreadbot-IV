@@ -63,7 +63,7 @@ public:
 	Input(Joystick* _driveStick, 
 		Joystick* _shootStick,
 		OctocanumDrive* _drive, 
-		armControl* _arms,
+		ArmControl* _arms,
 		Shooter* _shooter);
 
 	void Update();
@@ -73,11 +73,10 @@ private:
 	Joystick* shootStick;
 
 	OctocanumDrive* drive;
-	armControl* arms;
+	ArmControl* arms;
 	Shooter* shooter;
 
 	bool dance;
 };
 
 #endif
-

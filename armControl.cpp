@@ -1,11 +1,11 @@
 #include "armControl.h"
 
-ArmControl::ArmControl(Talon* _wheels, Talon* _flipper, DoubleSolenoid* _arms, Encoder* _pot)
+ArmControl::ArmControl(Talon* newWheels, Talon* newFlipper, DoubleSolenoid* newArms, AnalogChannel* newPot)
 {
-	armWheels = _wheels;
-	flipper = _flipper;
-	armPneu = _arms;
-	flipPot = _pot;
+	armWheels = newWheels;
+	flipper = newFlipper;
+	armPneu = newArms;
+	flipPot = newPot;
 }
 
 void ArmControl::MoveArms(DoubleSolenoid::Value value)
@@ -25,5 +25,5 @@ void ArmControl::MoveFlipper(float value)
 
 int ArmControl::GetFlipPot()
 {
-	return flipPot->Get();
+	return flipPot->GetValue();
 }

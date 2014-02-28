@@ -3,19 +3,25 @@
 class Shooter
 {
 public:
-	Shooter(Talon* newMotor,
+	Shooter(Relay* newMotor,
 		DigitalInput* newSwitch,
-		Solenoid* newSolenoid);
+		Solenoid* newSolenoid
+	);
+	
 	void shoot();
 	void setReset();
 	void update();
+	
 	bool getActive();
+	
 private:
+	void reset();
+	
+	Relay* winchMotor;
+	DigitalInput* winchSwitch;
+	Solenoid* releaser;
+	
 	bool resetEnabled;
 	bool active;
 	bool winchAtMax;
-	Talon* winchMotor;
-	DigitalInput* winchSwitch;
-	Solenoid* releaser;
-	void reset();
 };

@@ -1,85 +1,70 @@
-// Finished merge (Parker)
-
 #include "WPILib.h"
-#include "Robot.h"
 #include "Input.h"
-
+#include "Vision.h"
 
 class Robot : public IterativeRobot 
 {
-// Interface
+	// Components
 	DriverStation* ds;
-	Joystick* gamePad;
+	Joystick* gamepad;
 	Joystick* shootPad;
-
-// System
-	Watchdog* watchdog;
-	Compressor* compressor;
-	
-// Drivetrain
 	OctocanumDrive* drivetrain;
 	Input* input;
-	
-// Shooter
-	Encoder* flipPot;
+
+	Compressor* compressor;
+	Watchdog* watchdog;
+
+	Vision* camera;
+	AnalogChannel* flipPot;
 	DigitalInput* shooterSwitch;
 	Shooter* shooter;
-	Talon* winchMotor;
-	Encoder* winchEncoder;
+	Relay* winchMotor; //This thing asked me to RELAY a message: It's a relay!
 	Talon* rollerMotor;
 	Talon* flipperMotor;
 	DoubleSolenoid* armPneus;
 	Solenoid* shooterReleaser;
 	ArmControl* arms;
 
-// System state
-	bool autonDone;		// True when autonomous mode has finished executing
+	// System variables
+	bool autonDone; //True when autonomous mode has executed
+	bool ballLoaded;
 
 public:
 	
 void Robot::RobotInit() 
 {
-// DS
 	SmartDashboard::init();
 	ds = DriverStation::GetInstance();
-
-// Watchdog
-	watchdog = &GetWatchdog();
-	Watchdog->SetExpiration(0.5);
-	watchdog->SetEnabled(false);
-
-// Drivetrain
+	gamepad = new Joystick(1);
+	shootPad = new Joystick(2);
 	drivetrain = new OctocanumDrive();
 	compressor = new Compressor(1, 8);
 
-// Shooter
-	flipPot = new Encoder(10, 11);
+	watchdog = &GetWatchdog();
+	watchdog->SetEnabled(false);
+
+	camera = new Vision();
+	flipPot = new AnalogChannel(2);
 	armPneus = new DoubleSolenoid(5, 6);
 	flipperMotor = new Talon(6);
 	shooterSwitch = new DigitalInput(8);
 	shooterReleaser = new Solenoid(7);
-	winchMotor = new Talon(5); // relay
-	winchEncoder = new Encoder(2, 3);
+	winchMotor = new Relay(5); //In case you didn't know, this is a relay.
 	rollerMotor = new Talon(7);
-	arms = new ArmControl(rollerMotor, flipperMotor, armPneus, flipPot);
-	shooter = new Shooter(winchMotor, shooterSwitch, shooterReleaser);
 
-// Driver interfaces
-	gamePad = new Joystick(1);
-	shootPad = new Joystick(2);
-	input = new Input(gamePad,
+	shooter = new Shooter(winchMotor, shooterSwitch, shooterReleaser);
+	arms = new ArmControl(rollerMotor, flipperMotor, armPneus, flipPot);
+	input = new Input(gamepad,
 		shootPad,
 		drivetrain,
 		arms,
-		shooter
-	);
-
-	this->SetPeriod(0.0);
+		shooter);
 }
 
 void Robot::DisabledInit()
 {
 	compressor->Stop();
+	//shooter->release();
 }
 
 void Robot::DisabledPeriodic()
@@ -87,41 +72,50 @@ void Robot::DisabledPeriodic()
 }
 
 
+
 void Robot::AutonomousInit()
 {
+
 	autonDone = false;
-	watchdog->SetEnabled(false);
 	drivetrain->Enable();
 	compressor->Start();
 }
 
 void Robot::AutonomousPeriodic()
 {
+	if (!autonDone) return;
 
+	drivetrain->Drop();
+	Wait(0.75);
+	drivetrain->Drive(0.0, 0.0, 0.2);
+	//while the hot goal isn't in the crosshairs
+		Wait(0.033);
+	//end
+	drivetrain->Drive(0.0, 0.2, 0.0);
+	Wait(1);
+	#ifdef _SHOOTER
+		shoot->release();
+	#endif
+	Wait(1);
+	drivetrain->Drive(0.0, 0.0, 0.0);
+	autonDone = true;
 }
-
-
 void Robot::TeleopInit()
 {
-	watchdog->SetEnabled(true);
-	
 	drivetrain->Enable();
 	compressor->Start();
 }
 
 void Robot::TeleopPeriodic() 
 {
-	watchdog->Feed();
 	input->Update();
-
+	SmartDashboard::PutBoolean("Test", true);
+//	watchdog->Feed();
 }
 
 
 void Robot::TestInit()
 {
-	SmartDashboard::PutString("C++ Version", "__cplusplus");
-	SmartDashboard::PutString("Compile date", "__DATE__");
-	SmartDashboard::PutString("Compile time", "__TIME__");
 }
 
 void Robot::TestPeriodic()

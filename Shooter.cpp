@@ -1,14 +1,15 @@
 #include "Shooter.h"
 
-Shooter::Shooter(Talon* newMotor, DigitalInput* newSwitch, Solenoid* newSolenoid)
+Shooter::Shooter(Relay* newMotor, DigitalInput* newSwitch, Solenoid* newSolenoid)
 {
-	active = false;
-	winchAtMax = false;
-	resetEnabled = false;
+	active = true;					//Is the shooter ready to shoot?
+	winchAtMax = true;				//Is the winch pulled back yet?
+	resetEnabled = false;			//Does the shooter need to be reset?
 	winchMotor = newMotor;
 	winchSwitch = newSwitch;
 	releaser = newSolenoid;
 }
+
 void Shooter::shoot()
 {
 	if (!active) return; //Shooter cannot shoot while not ready
@@ -18,29 +19,33 @@ void Shooter::shoot()
 	active = false;
 	winchAtMax = false;
 }
+
 void Shooter::reset()
 {
 	if (!resetEnabled) return; //Don't reset if resetting isn't allowed
 	if (active) return; //Shooter shouldn't reset if it is reset.
 	if (winchSwitch->Get()) winchAtMax = true;
-	if (!winchAtMax) winchMotor->Set(1);
+	if (!winchAtMax) winchMotor->Set(Relay::kForward);
 	if (winchAtMax)
 	{
-		winchMotor->Set(-1);
-		Wait(4.0);
-		winchMotor->Set(0);
+		winchMotor->Set(Relay::kReverse)
+		Wait(6.0);
+		winchMotor->Set(Relay::kOff);
 		active = true;
 	}
 }
+
 void Shooter::update()
 {
 	if (resetEnabled) reset();
 	if (active) resetEnabled = false;
 }
+
 bool Shooter::getActive()
 {
 	return active;
 }
+
 void Shooter::setReset()
 {
 	resetEnabled = true;
