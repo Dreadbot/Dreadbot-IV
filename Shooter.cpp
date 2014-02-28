@@ -28,8 +28,8 @@ void Shooter::reset()
 	if (!winchAtMax) winchMotor->Set(Relay::kForward);
 	if (winchAtMax)
 	{
-		winchMotor->Set(Relay::kReverse)
-		Wait(6.0);
+		winchMotor->Set(Relay::kReverse);
+		Wait(4.6);
 		winchMotor->Set(Relay::kOff);
 		active = true;
 	}

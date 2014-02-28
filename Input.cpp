@@ -3,7 +3,7 @@
 Input::Input(Joystick* _drivestick, 
 	Joystick* _shootStick,
 	OctocanumDrive* _drive,
-	armControl* _arms,
+	ArmControl* _arms,
 	Shooter* _shooter)
 {
 	driveStick = _drivestick;
@@ -24,7 +24,7 @@ void Input::Update()
 	bool dance = driveStick->GetRawButton(DANCE_ENABLE);
 
 	SmartDashboard::PutBoolean("Traction Mode: ", drop); 
-	SmartDashboard::PutNumber("Flipper Value: ", arms->getFlipPot()); //TEST
+	SmartDashboard::PutNumber("Flipper Value: ", arms->GetFlipPot()); //TEST
 
 	if (x < 0.1 && x > -0.1) x = 0.0;
 	if (y < 0.1 && y > -0.1) y = 0.0;
@@ -54,20 +54,20 @@ void Input::Update()
 	if (armAxis <= 0.1 && flipAxis >= -0.1) armAxis = 0.0;
 
 	// Set controls
-	arms->moveFlipper(flipAxis);
+	arms->MoveFlipper(flipAxis);
 	if (armAxis > 0.5) 
-		arms->moveArms(DoubleSolenoid::kForward);
+		arms->MoveArms(DoubleSolenoid::kForward);
 	if (armAxis < -0.5) 
-		arms->moveArms(DoubleSolenoid::kReverse);
+		arms->MoveArms(DoubleSolenoid::kReverse);
 	if (armAxis < -0.5 && armAxis > 0.5) 
-		arms->moveArms(DoubleSolenoid::kOff);
+		arms->MoveArms(DoubleSolenoid::kOff);
 	if (shootStick->GetRawButton(SHOOTER_RESET)) 
 		shooter->setReset();
 	if (shootStick->GetRawButton(ARM_MECS_IN)) 
-		arms->moveWheels(1);
+		arms->MoveWheels(1);
 	else if (shootStick->GetRawAxis(ARM_MECS_OUT)) 
-		arms->moveWheels(-1);
+		arms->MoveWheels(-1);
 	else 
-		arms->moveWheels(0);
+		arms->MoveWheels(0);
 
 }
