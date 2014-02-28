@@ -31,40 +31,53 @@
 #endif
 
 #ifdef PROFILE1
-	#define MEC_X AXIS_LJOY_X //Movement controls
+
+// Driver controls
+	#define MEC_X AXIS_LJOY_X 
 	#define MEC_Y AXIS_LJOY_Y
 	#define MEC_R AXIS_RJOY_X
 	#define ARC_Y AXIS_LJOY_Y
 	#define ARC_R AXIS_RJOY_X 
 	#define DROP BUTTON_RT
+	#define RAGE_MODE BUTTON_START
 
-	#define FLIPPER AXIS_RJOY_Y //Shooter controls
+// Shooter controls
+	#define FLIPPER AXIS_RJOY_Y 
 	#define TRIGGER BUTTON_A
 	#define ARMS AXIS_LJOY_Y
 	#define ARM_MECS_IN BUTTON_LT
 	#define ARM_MECS_OUT BUTTON_RT
 	#define SHOOTER_RESET BUTTON_B
 
-	#define DANCE_LEFT BUTTON_LB //Dancing controls
-	#define DANCE_RIGHT BUTTON_RB
+// Dance controls (on driver joystick)
 	#define DANCE_ENABLE BUTTON_Y
+	#define DANCE_LEFT BUTTON_LB 
+	#define DANCE_RIGHT BUTTON_RB
+
 #endif
+
 
 class Input 
 {
 public:
-	Input(Joystick* newStick, 
-		Joystick* newP2Stick,
-		OctocanumDrive* newDrive, 
-		armControl* newArms,
-		Shooter* newShooter);
+	Input(Joystick* _driveStick, 
+		Joystick* _shootStick,
+		OctocanumDrive* _drive, 
+		armControl* _arms,
+		Shooter* _shooter);
+
 	void Update();
+
 private:
-	Joystick* stick;
-	Joystick* p2Stick;
+	Joystick* driveStick;
+	Joystick* shootStick;
+
 	OctocanumDrive* drive;
 	armControl* arms;
 	Shooter* shooter;
+
 	bool dance;
 };
+
 #endif
+
