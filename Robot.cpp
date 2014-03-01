@@ -51,7 +51,7 @@ void Robot::RobotInit()
 	flipperMotor = new Talon(6);
 	shooterSwitch = new DigitalInput(8);
 	shooterReleaser = new Valve(7, 8);
-	winchMotor = new Relay(5);
+	winchMotor = new Relay(1);
 	rollerMotor = new Talon(7);
 	ultrasound = new Ultrasonic(14, 14);
 
