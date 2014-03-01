@@ -67,12 +67,6 @@ void Input::Update()
 		arms->MoveArms(DoubleSolenoid::kOff);
 	if (shootStick->GetRawButton(SHOOTER_RESET)) 
 		shooter->setReset();
-	/*if (shootStick->GetRawButton(ARM_MECS_IN)) 
-		arms->MoveWheels(1);
-	if (shootStick->GetRawButton(ARM_MECS_OUT)) 
-		arms->MoveWheels(-1);*/
 	arms->MoveWheels(rollerAxis);
-	/*if (!shootStick->GetRawButton(ARM_MECS_OUT) && !shootStick->GetRawButton(ARM_MECS_IN))
-		arms->MoveWheels(0);*/
 
 }

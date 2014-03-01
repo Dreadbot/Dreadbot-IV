@@ -15,7 +15,6 @@ void Shooter::shoot()
 	if (!active) return; //Shooter cannot shoot while not ready
 	releaser->Set(false);
 	Wait(2.0);
-	releaser->Set(true);
 	active = false;
 	winchAtMax = false;
 }
@@ -25,9 +24,11 @@ void Shooter::reset()
 	if (!resetEnabled) return; //Don't reset if resetting isn't allowed
 	if (active) return; //Shooter shouldn't reset if it is reset.
 	if (winchSwitch->Get()) winchAtMax = true;
-	if (!winchAtMax) winchMotor->Set(Relay::kForward);
+	if (!winchAtMax)
+		winchMotor->Set(Relay::kForward);
 	if (winchAtMax)
 	{
+		releaser->Set(true);
 		winchMotor->Set(Relay::kReverse);
 		Wait(4.6);
 		winchMotor->Set(Relay::kOff);

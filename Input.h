@@ -62,12 +62,11 @@
 	#define RAGE_MODE D_BUTTON_START
 
 // Shooter controls
-	#define FLIPPER D_AXIS_RJOY_Y 
-	#define TRIGGER D_BUTTON_A
-	#define ARMS D_AXIS_LJOY_Y
-	#define ARM_MECS_IN D_BUTTON_LT
-	#define ARM_MECS_OUT D_BUTTON_RT
-	#define SHOOTER_RESET D_BUTTON_B
+	#define FLIPPER X_AXIS_RJOY_Y 
+	#define TRIGGER X_BUTTON_A
+	#define ARMS X_AXIS_LJOY_Y
+	#define ARM_MECS X_AXIS_TRIGGERS
+	#define SHOOTER_RESET X_BUTTON_B
 
 // Dance controls (on driver joystick)
 	#define DANCE_ENABLE D_BUTTON_Y
