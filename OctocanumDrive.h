@@ -6,8 +6,6 @@
 #include  "Valve.h"
 #include <cmath>
 
-
-
 class OctocanumModule
 {
 public:
@@ -20,16 +18,16 @@ public:
 		motor = new Talon(motorCh);
 		encoder = new Encoder(encoderACh, encoderBCh);
 		encoder->SetReverseDirection(reverse);
-		encoder->SetDistancePerPulse(1.0/442.5);
+		encoder->SetDistancePerPulse(1.0/4425.0);
 			// Max speed of the motor without a load is about 116 radians/sec==4424.5 pulses/sec
 			// For traction, 0.05027 in/pulse
 			// For mecanum, 0.07540 in/pulse
 		//encoder->SetMinRate((float) 1/4425.0);
 		encoder->SetPIDSourceParameter(encoder->kRate);
 
-		cloop = new PIDController(1.0, 0.5, 0.0, encoder, motor, 0.034);
+		cloop = new PIDController(1.0, 0.5, 0.0, encoder, motor, 0.05);
 		cloop->SetInputRange(-1.0, 1.0);
-		cloop->SetOutputRange(-10.0, 10.0);
+		cloop->SetOutputRange(-1.0, 1.0);
 
 	}
 };

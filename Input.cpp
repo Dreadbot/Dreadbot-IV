@@ -43,18 +43,22 @@ void Input::Update()
 		else drive->Raise();
 	}
 	shooter->update();
-	if (driveStick->GetRawButton(TRIGGER)) shooter->shoot();
+	if (driveStick->GetRawButton(TRIGGER) || shootStick->GetRawButton(TRIGGER)) shooter->shoot();
 
 	// Shooter Controls
 	float flipAxis = shootStick->GetRawAxis(FLIPPER);
 	float armAxis = shootStick->GetRawAxis(ARMS);
+	float rollerAxis = shootStick->GetRawAxis(ARM_MECS);
+	//DEBUG
+	SmartDashboard::PutNumber("flipAxis:", flipAxis);
 	
 	// Dead zone
 	if (flipAxis <= 0.1 && flipAxis >= -0.1) flipAxis = 0.0;
 	if (armAxis <= 0.1 && flipAxis >= -0.1) armAxis = 0.0;
-
+	if (rollerAxis <= 0.1 && rollerAxis >= -0.1) rollerAxis = DriverStation::GetInstance()->GetAnalogIn(2);
 	// Set controls
 	arms->MoveFlipper(flipAxis);
+	
 	if (armAxis > 0.5) 
 		arms->MoveArms(DoubleSolenoid::kForward);
 	if (armAxis < -0.5) 
@@ -63,11 +67,12 @@ void Input::Update()
 		arms->MoveArms(DoubleSolenoid::kOff);
 	if (shootStick->GetRawButton(SHOOTER_RESET)) 
 		shooter->setReset();
-	if (shootStick->GetRawButton(ARM_MECS_IN)) 
+	/*if (shootStick->GetRawButton(ARM_MECS_IN)) 
 		arms->MoveWheels(1);
-	else if (shootStick->GetRawAxis(ARM_MECS_OUT)) 
-		arms->MoveWheels(-1);
-	else 
-		arms->MoveWheels(0);
+	if (shootStick->GetRawButton(ARM_MECS_OUT)) 
+		arms->MoveWheels(-1);*/
+	arms->MoveWheels(rollerAxis);
+	/*if (!shootStick->GetRawButton(ARM_MECS_OUT) && !shootStick->GetRawButton(ARM_MECS_IN))
+		arms->MoveWheels(0);*/
 
 }

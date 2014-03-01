@@ -1,5 +1,7 @@
 #include <WPILib.h>
 
+#define FLIPPER_OFFSET 400
+
 class ArmControl
 {
 public:

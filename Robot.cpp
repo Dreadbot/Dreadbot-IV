@@ -1,6 +1,7 @@
 #include "WPILib.h"
 #include "Input.h"
 #include "Vision.h"
+#include "Valve.h"
 
 class Robot : public IterativeRobot 
 {
@@ -22,7 +23,7 @@ class Robot : public IterativeRobot
 	Talon* rollerMotor;
 	Talon* flipperMotor;
 	DoubleSolenoid* armPneus;
-	Solenoid* shooterReleaser;
+	Valve* shooterReleaser;
 	ArmControl* arms;
 
 	// System variables
@@ -48,8 +49,8 @@ void Robot::RobotInit()
 	armPneus = new DoubleSolenoid(5, 6);
 	flipperMotor = new Talon(6);
 	shooterSwitch = new DigitalInput(8);
-	shooterReleaser = new Solenoid(7);
-	winchMotor = new Relay(5); //In case you didn't know, this is a relay.
+	shooterReleaser = new Valve(7, 8);
+	winchMotor = new Relay(5);
 	rollerMotor = new Talon(7);
 
 	shooter = new Shooter(winchMotor, shooterSwitch, shooterReleaser);
@@ -83,22 +84,7 @@ void Robot::AutonomousInit()
 
 void Robot::AutonomousPeriodic()
 {
-	if (!autonDone) return;
 
-	drivetrain->Drop();
-	Wait(0.75);
-	drivetrain->Drive(0.0, 0.0, 0.2);
-	//while the hot goal isn't in the crosshairs
-		Wait(0.033);
-	//end
-	drivetrain->Drive(0.0, 0.2, 0.0);
-	Wait(1);
-	#ifdef _SHOOTER
-		shoot->release();
-	#endif
-	Wait(1);
-	drivetrain->Drive(0.0, 0.0, 0.0);
-	autonDone = true;
 }
 void Robot::TeleopInit()
 {

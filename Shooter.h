@@ -1,11 +1,12 @@
 #include "WPILib.h"
+#include "Valve.h"
 
 class Shooter
 {
 public:
 	Shooter(Relay* newMotor,
 		DigitalInput* newSwitch,
-		Solenoid* newSolenoid
+		Valve* newSolenoid
 	);
 	
 	void shoot();
@@ -19,7 +20,7 @@ private:
 	
 	Relay* winchMotor;
 	DigitalInput* winchSwitch;
-	Solenoid* releaser;
+	Valve* releaser;
 	
 	bool resetEnabled;
 	bool active;

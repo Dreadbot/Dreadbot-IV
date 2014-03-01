@@ -1,6 +1,6 @@
 #include "Shooter.h"
 
-Shooter::Shooter(Relay* newMotor, DigitalInput* newSwitch, Solenoid* newSolenoid)
+Shooter::Shooter(Relay* newMotor, DigitalInput* newSwitch, Valve* newSolenoid)
 {
 	active = true;					//Is the shooter ready to shoot?
 	winchAtMax = true;				//Is the winch pulled back yet?

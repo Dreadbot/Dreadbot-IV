@@ -9,12 +9,10 @@ OctocanumDrive::OctocanumDrive()
 	drive[kRearLeft] = new OctocanumModule(3, 6, 7, true);
 	drive[kRearRight] = new OctocanumModule(4, 8, 9, false);
 
-	#ifndef _TESTBED
-		valve0 = new Valve(1, 2);
-		valve1 = new Valve(3, 4);
-		valve0->Set(true);
-		valve1->Set(true);
-	#endif
+	valve0 = new Valve(1, 2);
+	valve1 = new Valve(3, 4);
+	valve0->Set(true);
+	valve1->Set(true);
 }
 
 void OctocanumDrive::Enable()
@@ -24,11 +22,11 @@ void OctocanumDrive::Enable()
 		for (uint8_t i = 0; i < 3; i++) 
 		{
 			drive[i]->encoder->Start();
-			//drive[i]->cloop->Enable();
+			drive[i]->cloop->Enable();
 		}
 	#else
 		drive[0]->encoder->Start();
-		//drive[0]->cloop->Enable();
+		drive[0]->cloop->Enable();
 	#endif
 }
 
@@ -44,29 +42,22 @@ void OctocanumDrive::Disable()
 		drive[0]->cloop->Disable();
 	#endif
 	enabled = false;
-	SmartDashboard::PutBoolean("ODrive.Enabled", false);
 }
 
 void OctocanumDrive::Drop()
 {
 	if (tractionMode || !enabled) return;
-	#ifndef _TESTBED
-		valve0->Set(false);
-		valve1->Set(false);
-	#endif
+	valve0->Set(false);
+	valve1->Set(false);
 	tractionMode = true;
-	SmartDashboard::PutBoolean("ODrive.Traction", true);
 }
 
 void OctocanumDrive::Raise() 
 {
 	if (!tractionMode || !enabled) return;
-	#ifndef _TESTBED
-		valve0->Set(true);
-		valve1->Set(true);
-	#endif
+	valve0->Set(true);
+	valve1->Set(true);
 	tractionMode = false;
-	SmartDashboard::PutBoolean("ODrive.Traction", false);
 }
 
 

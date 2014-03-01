@@ -15,15 +15,21 @@ void ArmControl::MoveArms(DoubleSolenoid::Value value)
 
 void ArmControl::MoveWheels(float value)
 {
+	SmartDashboard::PutNumber("Motor value", value);
 	armWheels->Set(value);
 }
 
 void ArmControl::MoveFlipper(float value)
 {
-	flipper->Set(value);
+	/*if (GetFlipPot() > 110 && value > 0) 
+	{
+		flipper->Set(0.0);
+	} else {*/
+		flipper->Set(value);
+	//}
 }
 
 int ArmControl::GetFlipPot()
 {
-	return flipPot->GetValue();
+	return flipPot->GetValue() - FLIPPER_OFFSET;
 }
