@@ -18,29 +18,20 @@ OctocanumDrive::OctocanumDrive()
 void OctocanumDrive::Enable()
 {
 	enabled = true;
-	#ifndef _TESTBED
-		for (uint8_t i = 0; i < 3; i++) 
-		{
-			drive[i]->encoder->Start();
-			drive[i]->cloop->Enable();
-		}
-	#else
-		drive[0]->encoder->Start();
-		drive[0]->cloop->Enable();
-	#endif
+	for (uint8_t i = 0; i < 3; i++) 
+	{
+		drive[i]->encoder->Start();
+		drive[i]->cloop->Enable();
+	}
 }
 
 void OctocanumDrive::Disable()
 {
 	Raise();
-	#ifndef _TESTBED
-		for (uint8_t i = 0; i <= 3; i++) 
-		{
-			drive[i]->cloop->Disable();
-		}
-	#else
-		drive[0]->cloop->Disable();
-	#endif
+	for (uint8_t i = 0; i <= 3; i++) 
+	{
+		drive[i]->cloop->Disable();
+	}
 	enabled = false;
 }
 
@@ -140,13 +131,9 @@ void OctocanumDrive::Drive(float x, float y, float rotation)
 
 	Normalize();
 	drive[kFrontLeft]->cloop->SetSetpoint(-wheelSpeeds[kFrontLeft] * maxOutput);
-
-	#ifndef _TESTBED
-		drive[kRearLeft]->cloop->SetSetpoint(-wheelSpeeds[kRearLeft] * maxOutput);
-		drive[kFrontRight]->cloop->SetSetpoint(wheelSpeeds[kFrontRight] * maxOutput);
-		drive[kRearRight]->cloop->SetSetpoint(wheelSpeeds[kRearRight] * maxOutput);
-	#endif
-	
+	drive[kRearLeft]->cloop->SetSetpoint(-wheelSpeeds[kRearLeft] * maxOutput);
+	drive[kFrontRight]->cloop->SetSetpoint(wheelSpeeds[kFrontRight] * maxOutput);
+	drive[kRearRight]->cloop->SetSetpoint(wheelSpeeds[kRearRight] * maxOutput);
 }
 
 bool OctocanumDrive::GetDriveMode() 
