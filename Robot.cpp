@@ -25,6 +25,7 @@ class Robot : public IterativeRobot
 	DoubleSolenoid* armPneus;
 	Valve* shooterReleaser;
 	ArmControl* arms;
+	Ultrasonic* ultrasound;
 
 	// System variables
 	bool autonDone; //True when autonomous mode has executed
@@ -52,6 +53,7 @@ void Robot::RobotInit()
 	shooterReleaser = new Valve(7, 8);
 	winchMotor = new Relay(5);
 	rollerMotor = new Talon(7);
+	ultrasound = new Ultrasonic(14, 14);
 
 	shooter = new Shooter(winchMotor, shooterSwitch, shooterReleaser);
 	arms = new ArmControl(rollerMotor, flipperMotor, armPneus, flipPot);
@@ -65,6 +67,7 @@ void Robot::RobotInit()
 void Robot::DisabledInit()
 {
 	compressor->Stop();
+	ultrasound->SetEnabled(false);
 	//shooter->release();
 }
 
@@ -88,6 +91,8 @@ void Robot::AutonomousPeriodic()
 }
 void Robot::TeleopInit()
 {
+	ultrasound->SetAutomaticMode(true);
+	ultrasound->SetEnabled(true);
 	drivetrain->Enable();
 	compressor->Start();
 }
@@ -95,7 +100,7 @@ void Robot::TeleopInit()
 void Robot::TeleopPeriodic() 
 {
 	input->Update();
-	SmartDashboard::PutBoolean("Test", true);
+	SmartDashboard::PutNumber("Ultrasound Distance (mm):'", ultrasound->GetRangeMM());
 //	watchdog->Feed();
 }
 
