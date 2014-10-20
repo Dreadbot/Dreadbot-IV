@@ -130,10 +130,10 @@ void OctocanumDrive::Drive(float x, float y, float rotation)
 	maxOutput = DriverStation::GetInstance()->GetAnalogIn(1);
 
 	Normalize();
-	drive[kFrontLeft]->motor->Set(-wheelSpeeds[kFrontLeft] * maxOutput);
-	drive[kRearLeft]->motor->Set(-wheelSpeeds[kRearLeft] * maxOutput);
-	drive[kFrontRight]->motor->Set(wheelSpeeds[kFrontRight] * maxOutput);
-	drive[kRearRight]->motor->Set(wheelSpeeds[kRearRight] * maxOutput);
+-	drive[kFrontLeft]->cloop->SetSetpoint(-wheelSpeeds[kFrontLeft] * maxOutput);
+-	drive[kRearLeft]->cloop->SetSetpoint(-wheelSpeeds[kRearLeft] * maxOutput);
+-	drive[kFrontRight]->cloop->SetSetpoint(wheelSpeeds[kFrontRight] * maxOutput);
+-	drive[kRearRight]->cloop->SetSetpoint(wheelSpeeds[kRearRight] * maxOutput);
 }
 
 bool OctocanumDrive::GetDriveMode() 
